@@ -1,0 +1,487 @@
+<!doctype html>
+<html lang="pl" class="h-full">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NaSpontanie</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lucide@0.263.0/dist/umd/lucide.min.js"></script>
+  <script src="/_sdk/element_sdk.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&amp;family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&amp;display=swap" rel="stylesheet">
+  <script>
+    // Nasz symulator bazy danych (Mock API)
+const MockAPI = {
+    fetchTrips: async () => {
+        // Udajemy, że czekamy pół sekundy na odpowiedź z chmury
+        await new Promise(resolve => setTimeout(resolve, 500));
+        
+        return [
+            { id: 1, city: 'Wrocław', title: 'Ostrów Tumski o świcie', budget: 40, hours: 3, color: '#fef9c3', icon: 'map-pin' },
+            { id: 2, city: 'Wałbrzych', title: 'Zamek Książ i palmiarnia', budget: 120, hours: 6, color: '#dbeafe', icon: 'castle' },
+            { id: 3, city: 'Jelenia Góra', title: 'Perła Zachodu', budget: 90, hours: 5, color: '#fce7f3', icon: 'mountain' }
+        ];
+    }
+};
+tailwind.config = {
+  theme: {
+    extend: {
+      colors: {
+        primary: '#0000FF',
+        secondary: '#FACC15',
+        accent: '#FB923C',
+        bglight: '#FAFAFA',
+        dark: '#111827'
+      },
+      fontFamily: {
+        heading: ['Fraunces', 'serif'],
+        body: ['DM Sans', 'sans-serif']
+      }
+    }
+  }
+}
+</script>
+  <style>
+html, body { height: 100%; margin: 0; }
+* { box-sizing: border-box; }
+.app-root { height: 100%; overflow-y: auto; overflow-x: hidden; }
+.chip { transition: all 0.2s ease; }
+.chip:hover, .chip.active { transform: scale(1.05); }
+.trip-card { transition: transform 0.25s ease, box-shadow 0.25s ease; }
+.trip-card:hover { transform: translateY(-4px); box-shadow: 0 12px 32px rgba(0,0,0,0.1); }
+.heart-btn { transition: transform 0.2s ease; }
+.heart-btn:hover { transform: scale(1.2); }
+.fade-up { opacity: 0; transform: translateY(24px); transition: opacity 0.6s ease, transform 0.6s ease; }
+.fade-up.visible { opacity: 1; transform: translateY(0); }
+.pin-bounce { animation: pinBounce 2s ease-in-out infinite; }
+@keyframes pinBounce { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+.scroll-container { scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; }
+.scroll-container > * { scroll-snap-align: start; }
+.timeline-dot { width: 14px; height: 14px; border-radius: 50%; flex-shrink: 0; }
+.star-filled { color: #FACC15; }
+.star-empty { color: #D1D5DB; }
+</style>
+  <style>body { box-sizing: border-box; }</style>
+  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+ </head>
+ <body class="h-full font-body text-dark" style="background:#FAFAFA;">
+  <div class="app-root" id="appRoot"><!-- LANDING PAGE -->
+   <div id="landingPage"><!-- NAVBAR -->
+    <nav class="sticky top-0 z-50 backdrop-blur-md bg-white/80 border-b border-gray-100" style="font-family: var(--font-body, 'DM Sans', sans-serif);">
+     <div class="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between"><a href="#" class="flex items-center gap-2 group" onclick="event.preventDefault(); showLanding();">
+       <div class="w-8 h-8 bg-primary rounded-xl flex items-center justify-center"><i data-lucide="compass" class="w-4 h-4 text-white"></i>
+       </div><span class="font-heading font-bold text-lg tracking-tight text-dark">NaSpontanie</span> </a>
+      <div class="hidden sm:flex items-center gap-6 text-sm font-medium text-gray-500"><a href="#trips" class="hover:text-primary transition-colors">Odkryj</a> <a href="#how" class="hover:text-primary transition-colors">Jak to działa</a>
+      </div><button class="text-sm font-medium text-primary border border-primary/20 px-4 py-2 rounded-xl hover:bg-primary hover:text-white transition-all">Zaloguj się</button>
+     </div>
+    </nav><!-- HERO -->
+    <section class="px-4 sm:px-6 pt-16 sm:pt-24 pb-12 text-center max-w-3xl mx-auto fade-up">
+     <div class="inline-flex items-center gap-2 bg-secondary/20 text-dark text-xs font-semibold px-4 py-1.5 rounded-full mb-6"><i data-lucide="zap" class="w-3.5 h-3.5 text-accent"></i> Spontaniczne wycieczki po Polsce
+     </div>
+     <h1 id="heroHeadline" class="font-heading font-bold text-4xl sm:text-6xl leading-tight tracking-tight mb-4" style="color: var(--text-color, #111827);">Gdzie jedziesz jutro?</h1>
+     <p id="heroSub" class="text-gray-500 text-lg sm:text-xl mb-8 max-w-xl mx-auto leading-relaxed">Znajdź tani, gotowy plan jednodniowej wycieczki</p>
+     <div class="flex flex-col sm:flex-row items-center gap-3 max-w-lg mx-auto mb-6">
+      <div class="relative flex-1 w-full"><i data-lucide="map-pin" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400"></i> <input type="text" placeholder="Wpisz miasto startowe" class="w-full pl-10 pr-4 py-3.5 rounded-2xl border border-gray-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all" id="cityInput">
+      </div><button id="ctaBtn" onclick="showDetail()" class="w-full sm:w-auto px-6 py-3.5 bg-primary text-white font-semibold text-sm rounded-2xl hover:bg-blue-700 transition-all hover:shadow-lg hover:shadow-primary/20 flex items-center justify-center gap-2"> <span id="ctaText">Znajdź wycieczkę</span> <i data-lucide="arrow-right" class="w-4 h-4"></i> </button>
+     </div>
+     <div class="flex flex-wrap justify-center gap-2"><button class="chip px-4 py-2 bg-white border border-gray-200 rounded-full text-xs font-medium text-gray-600 hover:border-primary hover:text-primary" onclick="this.classList.toggle('active'); this.classList.toggle('border-primary'); this.classList.toggle('text-primary'); this.classList.toggle('bg-primary/5');">do 100 zł</button> <button class="chip px-4 py-2 bg-white border border-gray-200 rounded-full text-xs font-medium text-gray-600 hover:border-primary hover:text-primary" onclick="this.classList.toggle('active'); this.classList.toggle('border-primary'); this.classList.toggle('text-primary'); this.classList.toggle('bg-primary/5');"> <span class="inline-flex items-center gap-1"><i data-lucide="train-front" class="w-3 h-3"></i> pociąg</span> </button> <button class="chip px-4 py-2 bg-white border border-gray-200 rounded-full text-xs font-medium text-gray-600 hover:border-primary hover:text-primary" onclick="this.classList.toggle('active'); this.classList.toggle('border-primary'); this.classList.toggle('text-primary'); this.classList.toggle('bg-primary/5');"> <span class="inline-flex items-center gap-1"><i data-lucide="trees" class="w-3 h-3"></i> natura</span> </button>
+     </div>
+    </section><!-- TRIP CARDS -->
+    <section id="trips" class="px-4 sm:px-6 py-12 max-w-6xl mx-auto fade-up">
+     <h2 id="tripsTitle" class="font-heading font-bold text-2xl sm:text-3xl mb-6">Gotowe pomysły</h2>
+     <div class="scroll-container flex gap-4 overflow-x-auto pb-4 -mx-4 px-4" style="scrollbar-width: none;"><!-- Cards generated by JS -->
+     </div>
+    </section><!-- MAP PREVIEW -->
+    <section class="px-4 sm:px-6 py-16 fade-up">
+     <div class="max-w-4xl mx-auto bg-white rounded-3xl border border-gray-100 overflow-hidden shadow-sm">
+      <div class="relative h-64 sm:h-80" style="background: linear-gradient(135deg, #dbeafe 0%, #e0f2fe 40%, #f0fdf4 100%);"><!-- SVG Map illustration -->
+       <svg class="absolute inset-0 w-full h-full opacity-30" viewbox="0 0 800 400" fill="none"><path d="M100,350 Q200,300 250,280 T400,200 T550,250 T700,180" stroke="#2563EB" stroke-width="2" fill="none" stroke-dasharray="8,4" /> <path d="M50,200 Q150,150 300,180 T500,120 T750,200" stroke="#93c5fd" stroke-width="1.5" fill="none" stroke-dasharray="6,4" /> <circle cx="250" cy="280" r="40" fill="#2563EB" opacity="0.06" /> <circle cx="500" cy="120" r="55" fill="#2563EB" opacity="0.04" />
+       </svg><!-- Pins -->
+       <div class="absolute pin-bounce" style="left:20%;top:35%">
+        <div class="w-8 h-8 bg-primary rounded-full flex items-center justify-center shadow-lg shadow-primary/30">
+         <i data-lucide="map-pin" class="w-4 h-4 text-white"></i>
+        </div>
+        <div class="text-[10px] font-semibold text-primary mt-1 text-center">
+         Kraków
+        </div>
+       </div>
+       <div class="absolute pin-bounce" style="left:55%;top:25%;animation-delay:0.3s">
+        <div class="w-8 h-8 bg-accent rounded-full flex items-center justify-center shadow-lg shadow-accent/30">
+         <i data-lucide="map-pin" class="w-4 h-4 text-white"></i>
+        </div>
+        <div class="text-[10px] font-semibold text-accent mt-1 text-center">
+         Warszawa
+        </div>
+       </div>
+       <div class="absolute pin-bounce" style="left:38%;top:55%;animation-delay:0.6s">
+        <div class="w-6 h-6 bg-secondary rounded-full flex items-center justify-center shadow-lg shadow-secondary/30">
+         <i data-lucide="map-pin" class="w-3 h-3 text-dark"></i>
+        </div>
+        <div class="text-[10px] font-semibold text-gray-600 mt-1 text-center">
+         Zakopane
+        </div>
+       </div>
+       <div class="absolute pin-bounce" style="left:72%;top:45%;animation-delay:0.9s">
+        <div class="w-6 h-6 bg-primary/70 rounded-full flex items-center justify-center shadow-lg">
+         <i data-lucide="map-pin" class="w-3 h-3 text-white"></i>
+        </div>
+        <div class="text-[10px] font-semibold text-primary mt-1 text-center">
+         Lublin
+        </div>
+       </div>
+      </div>
+      <div class="p-6 text-center">
+       <p class="text-gray-500 text-sm mb-3">Ponad 120 wycieczek w całej Polsce</p><button class="inline-flex items-center gap-2 px-5 py-2.5 bg-primary text-white text-sm font-semibold rounded-2xl hover:bg-blue-700 transition-all"> <i data-lucide="map" class="w-4 h-4"></i> Zobacz na mapie </button>
+      </div>
+     </div>
+    </section><!-- VALUE PROPS -->
+    <section id="how" class="px-4 sm:px-6 py-16 max-w-5xl mx-auto fade-up">
+     <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+      <div class="bg-white rounded-2xl p-6 border border-gray-100 hover:shadow-md transition-shadow">
+       <div class="w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center mb-4">
+        <i data-lucide="sparkles" class="w-5 h-5 text-primary"></i>
+       </div>
+       <h3 class="font-heading font-bold text-lg mb-1">Bez planowania</h3>
+       <p class="text-gray-500 text-sm leading-relaxed">Gotowy plan od drzwi do drzwi. Wsiadasz i jedziesz.</p>
+      </div>
+      <div class="bg-white rounded-2xl p-6 border border-gray-100 hover:shadow-md transition-shadow">
+       <div class="w-10 h-10 bg-yellow-50 rounded-xl flex items-center justify-center mb-4">
+        <i data-lucide="piggy-bank" class="w-5 h-5 text-secondary"></i>
+       </div>
+       <h3 class="font-heading font-bold text-lg mb-1">Niski koszt</h3>
+       <p class="text-gray-500 text-sm leading-relaxed">Pełna kontrola budżetu. Wiesz, ile wydasz, zanim wyjdziesz.</p>
+      </div>
+      <div class="bg-white rounded-2xl p-6 border border-gray-100 hover:shadow-md transition-shadow">
+       <div class="w-10 h-10 bg-orange-50 rounded-xl flex items-center justify-center mb-4">
+        <i data-lucide="gem" class="w-5 h-5 text-accent"></i>
+       </div>
+       <h3 class="font-heading font-bold text-lg mb-1">Lokalne perełki</h3>
+       <p class="text-gray-500 text-sm leading-relaxed">Odkryj mniej znane miejsca, o których nie piszą przewodniki.</p>
+      </div>
+     </div>
+    </section><!-- FINAL CTA -->
+    <section class="px-4 sm:px-6 py-16 fade-up">
+     <div class="max-w-3xl mx-auto text-center bg-gradient-to-br from-primary to-blue-700 rounded-3xl p-10 sm:p-14 relative overflow-hidden">
+      <div class="absolute inset-0 opacity-10">
+       <svg width="100%" height="100%">
+        <defs>
+         <pattern id="dots" x="0" y="0" width="24" height="24" patternunits="userSpaceOnUse">
+          <circle cx="2" cy="2" r="1.5" fill="white" />
+         </pattern>
+        </defs><rect width="100%" height="100%" fill="url(#dots)" />
+       </svg>
+      </div>
+      <div class="relative z-10">
+       <h2 id="finalCtaText" class="font-heading font-bold text-2xl sm:text-4xl text-white mb-4">Masz dzień wolny? To wystarczy.</h2>
+       <p class="text-blue-200 text-sm mb-6">Znajdź idealną wycieczkę w 30 sekund</p><button onclick="showDetail()" class="inline-flex items-center gap-2 px-6 py-3.5 bg-white text-primary font-semibold text-sm rounded-2xl hover:bg-gray-50 transition-all hover:shadow-lg"> <span id="finalCtaBtnText">Znajdź wycieczkę</span> <i data-lucide="arrow-right" class="w-4 h-4"></i> </button>
+      </div>
+     </div>
+    </section><!-- FOOTER -->
+    <footer class="px-4 sm:px-6 py-8 border-t border-gray-100">
+     <div class="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-gray-400">
+      <div class="flex items-center gap-2">
+       <div class="w-5 h-5 bg-primary rounded-lg flex items-center justify-center">
+        <i data-lucide="compass" class="w-3 h-3 text-white"></i>
+       </div> NaSpontanie © 2025
+      </div>
+      <div class="flex gap-4"><a href="#" class="hover:text-primary transition-colors">Regulamin</a> <a href="#" class="hover:text-primary transition-colors">Prywatność</a> <a href="#" class="hover:text-primary transition-colors">Kontakt</a>
+      </div>
+     </div>
+    </footer>
+   </div><!-- /landingPage --> <!-- TRIP DETAIL PAGE -->
+   <div id="detailPage" class="hidden"><!-- Detail Navbar -->
+    <nav class="sticky top-0 z-50 backdrop-blur-md bg-white/80 border-b border-gray-100">
+     <div class="max-w-4xl mx-auto px-4 sm:px-6 h-14 flex items-center gap-3"><button onclick="showLanding()" class="w-8 h-8 rounded-xl bg-gray-100 flex items-center justify-center hover:bg-gray-200 transition-colors"><i data-lucide="arrow-left" class="w-4 h-4"></i></button> <span class="font-heading font-semibold text-sm">Szczegóły wycieczki</span>
+     </div>
+    </nav><!-- Detail Content -->
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 py-6"><!-- Map header -->
+     <div class="rounded-2xl overflow-hidden mb-6 relative" style="background: linear-gradient(135deg, #dbeafe, #e0f2fe, #fef9c3); height: 200px;">
+      <svg class="absolute inset-0 w-full h-full" viewbox="0 0 800 200" fill="none"><path d="M80,160 C200,80 350,120 450,70 S650,110 750,50" stroke="#2563EB" stroke-width="3" fill="none" stroke-linecap="round" /> <circle cx="80" cy="160" r="8" fill="#2563EB" /><circle cx="80" cy="160" r="4" fill="white" /> <circle cx="450" cy="70" r="6" fill="#FB923C" /><circle cx="450" cy="70" r="3" fill="white" /> <circle cx="750" cy="50" r="8" fill="#2563EB" /><circle cx="750" cy="50" r="4" fill="white" /> <text x="65" y="185" font-size="11" fill="#2563EB" font-weight="600" font-family="DM Sans">
+        Kraków
+       </text> <text x="425" y="95" font-size="10" fill="#FB923C" font-weight="600" font-family="DM Sans">
+        Ojców
+       </text> <text x="710" y="38" font-size="11" fill="#2563EB" font-weight="600" font-family="DM Sans">
+        Pieskowa Skała
+       </text>
+      </svg>
+     </div><!-- Title & rating -->
+     <div class="mb-6">
+      <div class="flex items-center gap-2 text-xs text-gray-400 mb-2"><i data-lucide="map-pin" class="w-3 h-3"></i> Kraków → Ojców → Pieskowa Skała
+      </div>
+      <h1 class="font-heading font-bold text-2xl sm:text-3xl mb-2">Dolina Prądnika — perła Jury</h1>
+      <div class="flex items-center gap-3 flex-wrap">
+       <div class="flex items-center gap-0.5" id="starsContainer"></div><span class="text-sm text-gray-500">4.7 (128 opinii)</span> <span class="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-medium">Popularna</span>
+      </div>
+     </div><!-- Quick stats -->
+     <div class="grid grid-cols-3 gap-3 mb-8">
+      <div class="bg-white rounded-2xl border border-gray-100 p-4 text-center">
+       <div class="text-2xl font-bold text-primary font-heading">
+        120 zł
+       </div>
+       <div class="text-xs text-gray-400 mt-1">
+        budżet
+       </div>
+      </div>
+      <div class="bg-white rounded-2xl border border-gray-100 p-4 text-center">
+       <div class="text-2xl font-bold text-dark font-heading">
+        7h
+       </div>
+       <div class="text-xs text-gray-400 mt-1">
+        czas
+       </div>
+      </div>
+      <div class="bg-white rounded-2xl border border-gray-100 p-4 text-center">
+       <div class="flex justify-center mb-1">
+        <i data-lucide="train-front" class="w-5 h-5 text-accent"></i>
+       </div>
+       <div class="text-xs text-gray-400">
+        pociąg + bus
+       </div>
+      </div>
+     </div><!-- Timeline -->
+     <div class="mb-8">
+      <h2 class="font-heading font-bold text-xl mb-4">Plan dnia</h2>
+      <div class="space-y-0" id="timeline"></div>
+     </div><!-- Attractions -->
+     <div class="mb-8">
+      <h2 class="font-heading font-bold text-xl mb-4">Atrakcje</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4" id="attractions"></div>
+     </div><!-- Budget Breakdown -->
+     <div class="mb-8">
+      <h2 class="font-heading font-bold text-xl mb-4">Budżet</h2>
+      <div class="bg-white rounded-2xl border border-gray-100 p-5">
+       <div class="space-y-3" id="budgetList"></div>
+       <div class="border-t border-gray-100 mt-4 pt-4 flex justify-between font-bold"><span>Łącznie</span><span class="text-primary text-lg">120 zł</span>
+       </div>
+      </div>
+     </div><!-- Practical Info -->
+     <div class="mb-8">
+      <h2 class="font-heading font-bold text-xl mb-4">Praktyczne informacje</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3" id="practicalInfo"></div>
+     </div><!-- Reviews -->
+     <div class="mb-12">
+      <h2 class="font-heading font-bold text-xl mb-4">Opinie</h2>
+      <div class="space-y-4" id="reviews"></div>
+     </div><!-- Bottom CTA -->
+     <div class="sticky bottom-4 z-40"><button class="w-full py-4 bg-primary text-white font-semibold rounded-2xl hover:bg-blue-700 transition-all shadow-lg shadow-primary/20 flex items-center justify-center gap-2 text-sm"> <i data-lucide="navigation" class="w-4 h-4"></i> Zaplanuj tę wycieczkę </button>
+     </div>
+     <div class="h-8"></div>
+    </div>
+   </div><!-- /detailPage -->
+  </div><!-- /appRoot -->
+  <script>
+// Data
+const trips = [
+  { city: 'Ojców', title: 'Dolina Prądnika', budget: 120, hours: 7, color: '#dbeafe', icon: 'mountain' },
+  { city: 'Kazimierz Dolny', title: 'Nadwiślańska perła', budget: 95, hours: 8, color: '#fef9c3', icon: 'landmark' },
+  { city: 'Zalipie', title: 'Malowana wieś', budget: 80, hours: 5, color: '#fce7f3', icon: 'palette' },
+  { city: 'Książ', title: 'Zamek i ogrody', budget: 110, hours: 6, color: '#e0f2fe', icon: 'castle' },
+  { city: 'Chochołów', title: 'Drewniana tradycja', budget: 70, hours: 4, color: '#f0fdf4', icon: 'home' }
+];
+
+const timelineData = [
+  { time: '7:30', label: 'Wyjazd pociągiem z Krakowa', type: 'transport' },
+  { time: '8:15', label: 'Przyjazd do Ojcowa, krótki spacer', type: 'walk' },
+  { time: '9:00', label: 'Brama Krakowska — widok na dolinę', type: 'sight' },
+  { time: '10:30', label: 'Jaskinia Łokietka — zwiedzanie', type: 'sight' },
+  { time: '12:00', label: 'Obiad w lokalnym barze', type: 'food' },
+  { time: '13:00', label: 'Szlak do Pieskowej Skały', type: 'walk' },
+  { time: '14:30', label: 'Zamek Pieskowa Skała', type: 'sight' },
+  { time: '16:00', label: 'Powrót busem do Krakowa', type: 'transport' }
+];
+
+const attractionsData = [
+  { name: 'Brama Krakowska', desc: 'Naturalna formacja skalna, symbol Ojcowa', icon: 'mountain' },
+  { name: 'Jaskinia Łokietka', desc: '320m podziemnych korytarzy z legendą', icon: 'flashlight' },
+  { name: 'Maczuga Herkulesa', desc: '25-metrowy wapień stojący samotnie', icon: 'milestone' },
+  { name: 'Zamek Pieskowa Skała', desc: 'Renesansowy zamek z muzeum i ogrodem', icon: 'castle' }
+];
+
+const budgetItems = [
+  { label: 'Transport', amount: '35 zł', icon: 'train-front' },
+  { label: 'Atrakcje', amount: '25 zł', icon: 'ticket' },
+  { label: 'Jedzenie', amount: '45 zł', icon: 'utensils' },
+  { label: 'Inne', amount: '15 zł', icon: 'circle-dot' }
+];
+
+const practicalData = [
+  { label: 'Godziny otwarcia', value: 'Jaskinia: 9:00–17:00', icon: 'clock' },
+  { label: 'Bilety', value: 'Jaskinia 20 zł, zamek 5 zł', icon: 'ticket' },
+  { label: 'Parking', value: 'Bezpłatny przy wejściu', icon: 'car' },
+  { label: 'Płatność', value: 'Gotówka + karta', icon: 'credit-card' }
+];
+
+const reviewsData = [
+  { name: 'Marta K.', rating: 5, text: 'Idealna wycieczka na jeden dzień! Krajobraz zapiera dech.', time: '2 tyg. temu' },
+  { name: 'Tomek W.', rating: 4, text: 'Świetny plan, jaskinia robi wrażenie. Polecam wygodne buty.', time: '1 mies. temu' }
+];
+
+// Navigation
+function showLanding() {
+  document.getElementById('landingPage').classList.remove('hidden');
+  document.getElementById('detailPage').classList.add('hidden');
+  document.getElementById('appRoot').scrollTop = 0;
+}
+function showDetail() {
+  document.getElementById('landingPage').classList.add('hidden');
+  document.getElementById('detailPage').classList.remove('hidden');
+  document.getElementById('appRoot').scrollTop = 0;
+  lucide.createIcons();
+}
+
+// Render trip cards
+function renderCards(tripsToRender) {
+    const grid = document.getElementById('tripsGrid');
+    if (!grid) return;
+
+    grid.innerHTML = tripsToRender.map(t => `
+        <div onclick="showDetail(${t.id})" class="cursor-pointer bg-white rounded-3xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-all">
+            <div class="h-40 rounded-2xl mb-4 flex items-center justify-center" style="background-color: ${t.color}">
+                <i data-lucide="${t.icon}" class="w-10 h-10 text-gray-700"></i>
+            </div>
+            <div class="flex justify-between items-start mb-2">
+                <div>
+                    <h3 class="font-bold text-lg text-dark">${t.city}</h3>
+                    <p class="text-gray-500 text-sm">${t.title}</p>
+                </div>
+            </div>
+            <div class="flex gap-2 mt-4">
+                <span class="bg-bglight text-xs px-3 py-1 rounded-full font-medium">do ${t.budget} zł</span>
+                <span class="bg-bglight text-xs px-3 py-1 rounded-full font-medium">${t.hours}h</span>
+            </div>
+        </div>
+    `).join('');
+    
+    // To odświeża ikony
+    lucide.createIcons();
+}
+
+// Render detail sections
+function renderDetail() {
+  // Stars
+  const sc = document.getElementById('starsContainer');
+  sc.innerHTML = Array.from({length:5}, (_,i) => `<i data-lucide="star" class="w-4 h-4 ${i<4?'star-filled':'star-empty'}" ${i<4?'fill="currentColor"':''}></i>`).join('');
+
+  // Timeline
+  const colors = { transport:'#2563EB', walk:'#10B981', sight:'#FB923C', food:'#FACC15' };
+  document.getElementById('timeline').innerHTML = timelineData.map((t,i) => `
+    <div class="flex gap-4 items-start">
+      <div class="flex flex-col items-center">
+        <div class="timeline-dot border-2" style="border-color:${colors[t.type]};background:${i===0?colors[t.type]:'white'}"></div>
+        ${i<timelineData.length-1?'<div class="w-px flex-1 bg-gray-200" style="min-height:32px"></div>':''}
+      </div>
+      <div class="pb-5">
+        <div class="text-xs font-bold text-gray-400 mb-0.5">${t.time}</div>
+        <div class="text-sm font-medium">${t.label}</div>
+      </div>
+    </div>
+  `).join('');
+
+  // Attractions
+  const attrColors = ['#dbeafe','#fef9c3','#fce7f3','#e0f2fe'];
+  document.getElementById('attractions').innerHTML = attractionsData.map((a,i) => `
+    <div class="bg-white rounded-2xl border border-gray-100 overflow-hidden hover:shadow-md transition-shadow">
+      <div class="h-24 flex items-center justify-center" style="background:${attrColors[i]}"><i data-lucide="${a.icon}" class="w-8 h-8 text-gray-400 opacity-40"></i></div>
+      <div class="p-3.5"><div class="font-semibold text-sm mb-1">${a.name}</div><div class="text-xs text-gray-500 leading-relaxed">${a.desc}</div></div>
+    </div>
+  `).join('');
+
+  // Budget
+  document.getElementById('budgetList').innerHTML = budgetItems.map(b => `
+    <div class="flex items-center justify-between"><div class="flex items-center gap-3"><div class="w-8 h-8 bg-gray-50 rounded-xl flex items-center justify-center"><i data-lucide="${b.icon}" class="w-4 h-4 text-gray-400"></i></div><span class="text-sm">${b.label}</span></div><span class="text-sm font-semibold">${b.amount}</span></div>
+  `).join('');
+
+  // Practical
+  document.getElementById('practicalInfo').innerHTML = practicalData.map(p => `
+    <div class="bg-white rounded-xl border border-gray-100 p-4 flex items-start gap-3"><div class="w-8 h-8 bg-gray-50 rounded-xl flex items-center justify-center flex-shrink-0"><i data-lucide="${p.icon}" class="w-4 h-4 text-gray-400"></i></div><div><div class="text-xs text-gray-400 font-medium">${p.label}</div><div class="text-sm font-medium">${p.value}</div></div></div>
+  `).join('');
+
+  // Reviews
+  document.getElementById('reviews').innerHTML = reviewsData.map(r => `
+    <div class="bg-white rounded-2xl border border-gray-100 p-4">
+      <div class="flex items-center justify-between mb-2">
+        <div class="flex items-center gap-2"><div class="w-7 h-7 bg-primary/10 rounded-full flex items-center justify-center text-xs font-bold text-primary">${r.name[0]}</div><span class="text-sm font-semibold">${r.name}</span></div>
+        <span class="text-[10px] text-gray-400">${r.time}</span>
+      </div>
+      <div class="flex gap-0.5 mb-2">${Array.from({length:5},(_,i)=>`<i data-lucide="star" class="w-3 h-3 ${i<r.rating?'star-filled':'star-empty'}" ${i<r.rating?'fill="currentColor"':''}></i>`).join('')}</div>
+      <p class="text-sm text-gray-600 leading-relaxed">${r.text}</p>
+    </div>
+  `).join('');
+}
+
+// Intersection Observer for fade-up
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); }});
+}, { threshold: 0.1 });
+
+// Init
+// Funkcja, która odpala aplikację
+async function initApp() {
+    const data = await MockAPI.fetchTrips();
+    renderCards(data);
+}
+// Uruchamiamy po załadowaniu strony
+window.onload = initApp;
+
+renderDetail();
+document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+lucide.createIcons();
+
+// Element SDK
+const defaultConfig = {
+  hero_headline: 'Gdzie jedziesz jutro?',
+  hero_subheadline: 'Znajdź tani, gotowy plan jednodniowej wycieczki',
+  cta_text: 'Znajdź wycieczkę',
+  trips_section_title: 'Gotowe pomysły',
+  final_cta_text: 'Masz dzień wolny? To wystarczy.',
+  background_color: '#FAFAFA',
+  surface_color: '#FFFFFF',
+  text_color: '#111827',
+  primary_action_color: '#2563EB',
+  secondary_action_color: '#FB923C',
+  font_family: 'Fraunces',
+  font_size: 16
+};
+
+function applyConfig(c) {
+  const g = (k) => c[k] || defaultConfig[k];
+  document.getElementById('heroHeadline').textContent = g('hero_headline');
+  document.getElementById('heroSub').textContent = g('hero_subheadline');
+  document.getElementById('ctaText').textContent = g('cta_text');
+  document.getElementById('finalCtaBtnText').textContent = g('cta_text');
+  document.getElementById('tripsTitle').textContent = g('trips_section_title');
+  document.getElementById('finalCtaText').textContent = g('final_cta_text');
+
+  document.body.style.background = g('background_color');
+  document.querySelectorAll('.font-heading').forEach(el => el.style.fontFamily = `${g('font_family')}, serif`);
+
+  const base = g('font_size');
+  document.getElementById('heroHeadline').style.fontSize = `${base * 2.5}px`;
+  document.getElementById('heroSub').style.fontSize = `${base * 1.15}px`;
+}
+
+window.elementSdk.init({
+  defaultConfig,
+  onConfigChange: async (config) => { applyConfig(config); },
+  mapToCapabilities: (config) => ({
+    recolorables: [
+      { get: () => config.background_color || defaultConfig.background_color, set: (v) => { config.background_color = v; window.elementSdk.setConfig({ background_color: v }); } },
+      { get: () => config.surface_color || defaultConfig.surface_color, set: (v) => { config.surface_color = v; window.elementSdk.setConfig({ surface_color: v }); } },
+      { get: () => config.text_color || defaultConfig.text_color, set: (v) => { config.text_color = v; window.elementSdk.setConfig({ text_color: v }); } },
+      { get: () => config.primary_action_color || defaultConfig.primary_action_color, set: (v) => { config.primary_action_color = v; window.elementSdk.setConfig({ primary_action_color: v }); } },
+      { get: () => config.secondary_action_color || defaultConfig.secondary_action_color, set: (v) => { config.secondary_action_color = v; window.elementSdk.setConfig({ secondary_action_color: v }); } }
+    ],
+    borderables: [],
+    fontEditable: { get: () => config.font_family || defaultConfig.font_family, set: (v) => { config.font_family = v; window.elementSdk.setConfig({ font_family: v }); } },
+    fontSizeable: { get: () => config.font_size || defaultConfig.font_size, set: (v) => { config.font_size = v; window.elementSdk.setConfig({ font_size: v }); } }
+  }),
+  mapToEditPanelValues: (config) => new Map([
+    ['hero_headline', config.hero_headline || defaultConfig.hero_headline],
+    ['hero_subheadline', config.hero_subheadline || defaultConfig.hero_subheadline],
+    ['cta_text', config.cta_text || defaultConfig.cta_text],
+    ['trips_section_title', config.trips_section_title || defaultConfig.trips_section_title],
+    ['final_cta_text', config.final_cta_text || defaultConfig.final_cta_text]
+  ])
+});
+</script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9e9a5b9ac2e6e77f',t:'MTc3NTc0NjU3OS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>

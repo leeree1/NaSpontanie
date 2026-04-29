@@ -7,35 +7,35 @@ const trips = [
 ];
 
 const timelineData = [
-  { time: '7:30', label: 'Wyjazd pociągiem z Krakowa', type: 'transport' },
-  { time: '8:15', label: 'Przyjazd do Ojcowa, krótki spacer', type: 'walk' },
-  { time: '9:00', label: 'Brama Krakowska — widok na dolinę', type: 'sight' },
-  { time: '10:30', label: 'Jaskinia Łokietka — zwiedzanie', type: 'sight' },
-  { time: '12:00', label: 'Obiad w lokalnym barze', type: 'food' },
-  { time: '13:00', label: 'Szlak do Pieskowej Skały', type: 'walk' },
-  { time: '14:30', label: 'Zamek Pieskowa Skała', type: 'sight' },
-  { time: '16:00', label: 'Powrót busem do Krakowa', type: 'transport' }
+  { time: '7:30 - 7:50', label: 'Wyjazd z Wrocławia Głównego pociągiem Kolei Dolnośląskich. Podróż trwa około 1 godziny i 10 minut.', type: 'transport' },
+  { time: '9:00', label: 'Zamek Książ. Zwiedzanie trzeciego największego zamku w Polsce z audioguide’em (ok. 2 godziny).', type: 'sight' },
+  { time: '11:15', label: 'Palmiarnia. Spacer leśną ścieżką od Zamku (~15-20 min) do egzotycznego ogrodu zimowego z ponad 200 gatunkami roślin (ok. 1 godzina).', type: 'sight' },
+  { time: '13:00', label: 'Muzeum Porcelany. Zwiedzanie jedynego takiego muzeum w Polsce z kolekcją 10 000 eksponatów (ok. 1 godzina).', type: 'sight' },
+  { time: '14:15', label: 'Stara Kopalnia. Zwiedzanie trasy podziemnej i maszynowni w dawnym Centrum Nauki i Sztuki (ok. 2 godziny).', type: 'sight' },
+  { time: '17:00', label: 'Wieża Widokowa (Park Sobieskiego). Wejście na nową stalową wieżę z panoramą 360 stopni na Wałbrzych i Sudety (ok. 30 min).', type: 'sight' },
+  { time: '19:00 - 20:00', label: 'Powrót do Wrocławia. Wyjazd pociągiem powrotnym ze stacji w Wałbrzychu.', type: 'transport' }
 ];
 
 const attractionsData = [
-  { name: 'Brama Krakowska', desc: 'Naturalna formacja skalna, symbol Ojcowa', icon: 'mountain' },
-  { name: 'Jaskinia Łokietka', desc: '320m podziemnych korytarzy z legendą', icon: 'flashlight' },
-  { name: 'Maczuga Herkulesa', desc: '25-metrowy wapień stojący samotnie', icon: 'milestone' },
-  { name: 'Zamek Pieskowa Skała', desc: 'Renesansowy zamek z muzeum i ogrodem', icon: 'castle' }
+  { name: 'Zamek Książ', desc: 'Trzeci największy zamek w Polsce — zwiedzanie z audioguide w cenie biletu', icon: 'castle' },
+  { name: 'Palmiarnia', desc: 'Egzotyczny ogród zimowy z ponad 200 gatunkami roślin, pawiami i lemurami', icon: 'leaf' },
+  { name: 'Muzeum Porcelany', desc: 'Jedynie takie muzeum w Polsce z kolekcją 10 000 eksponatów', icon: 'coffee' },
+  { name: 'Stara Kopalnia', desc: 'Renesansowy zamek z muzeum i ogrodem', icon: 'castle' },
+  { name: 'Wieża Widokowa', desc: 'Nowa stalowa wieża z panoramą 360 stopni na Wałbrzych i Sudety', icon: 'castle' }
 ];
 
 const budgetItems = [
-  { label: 'Transport', amount: '35 zł', icon: 'train' },
-  { label: 'Atrakcje', amount: '25 zł', icon: 'ticket' },
+  { label: 'Pociąg Wrocław - Wałbrzych (obie strony)', amount: '35 zł', icon: 'train' },
+  { label: 'Bilet Explore Wałbrzych (4 atrakcje)', amount: '75 zł', icon: 'ticket' },
   { label: 'Jedzenie', amount: '45 zł', icon: 'utensils' },
-  { label: 'Inne', amount: '15 zł', icon: 'circle-dot' }
+  { label: 'Bilet na Wieżę Widokową', amount: '10 zł', icon: 'circle-dot' }
 ];
 
 const practicalData = [
-  { label: 'Godziny otwarcia', value: 'Jaskinia: 9:00–17:00', icon: 'clock' },
-  { label: 'Bilety', value: 'Jaskinia 20 zł, zamek 5 zł', icon: 'ticket' },
-  { label: 'Parking', value: 'Bezpłatny przy wejściu', icon: 'car' },
-  { label: 'Płatność', value: 'Gotówka + karta', icon: 'credit-card' }
+  { label: 'Bilet Explore Wałbrzych', value: 'Najlepiej kupić bilet łączony, który obejmuje Zamek Książ, Palmiarnię, Starą Kopalnię i Muzeum Porcelany.', icon: 'ticket' },
+  { label: 'Dojazd Kolejami', value: 'Z dworca Wałbrzych Miasto do Starej Kopalni dojdziesz pieszo w 10 minut. Do Zamku Książ dojedziesz autobusem linii 8.', icon: 'train' },
+  { label: 'Aplikacja KDR', value: 'Jeśli masz Kartę Dużej Rodziny, sprawdź zniżki na bilety wstępu — Wałbrzych oferuje spore rabaty.', icon: 'smartphone' },
+  { label: 'Obuwie i pogoda', value: 'W kopalni panuje stała temperatura ok. 10 stopni, a w Palmiarni jest bardzo wilgotno — ubierz się "na cebulkę".', icon: 'cloud-rain' }
 ];
 
 const reviewsData = [

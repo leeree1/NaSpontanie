@@ -9,13 +9,13 @@ function showDetail(tripId) {
     const trip = tripsData[tripId];
     if (!trip) return;
 
-    // 2. Podmień dane globalne dla render.js
-    window.timelineData = trip.timeline;
-    window.attractionsData = trip.attractions;
-    window.budgetItems = trip.budget;
-    window.practicalData = trip.practical;
+    // 2. dane globalne dla render.js
+    timelineData = trip.timeline;
+    attractionsData = trip.attractions;
+    budgetItems = trip.budget;
+    practicalData = trip.practical;
 
-    // 3. Zaktualizuj nagłówki w HTML bezpośrednio
+    // 3. nagłówki w HTML bezpośrednio
     document.querySelector('#detailPage h1').innerText = trip.city;
     document.querySelector('#detailPage .text-gray-400').innerHTML = 
         `<i data-lucide="map-pin" class="w-3 h-3"></i> ${trip.distance}`;

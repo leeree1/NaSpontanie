@@ -1,10 +1,10 @@
 // Render trip cards (Główna lista na landing page)
 function renderCards(tripsToRender) {
     const grid = document.getElementById('tripsGrid');
-    if (!grid) return; // Bezpiecznik: jeśli nie ma grida, nie rób nic
+    if (!grid) return;
 
     grid.innerHTML = tripsToRender.map(t => `
-        <div onclick="showDetail(${t.id})" class="cursor-pointer bg-white rounded-3xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-all">
+        <div onclick="showDetail('${t.id}')" class="cursor-pointer bg-white rounded-3xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-all fade-up">
             <div class="h-40 rounded-2xl mb-4 flex items-center justify-center" style="background-color: ${t.color}">
                 <i data-lucide="${t.icon}" class="w-10 h-10 text-gray-700"></i>
             </div>
@@ -15,8 +15,8 @@ function renderCards(tripsToRender) {
                 </div>
             </div>
             <div class="flex gap-2 mt-4">
-                <span class="bg-bglight text-xs px-3 py-1 rounded-full font-medium">do ${t.budget} zł</span>
-                <span class="bg-bglight text-xs px-3 py-1 rounded-full font-medium">${t.hours}h</span>
+                <span class="bg-gray-100 text-xs px-3 py-1 rounded-full font-medium">do ${t.budget} zł</span>
+                <span class="bg-gray-100 text-xs px-3 py-1 rounded-full font-medium">${t.hours}h</span>
             </div>
         </div>
     `).join('');

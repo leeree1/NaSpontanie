@@ -59,8 +59,9 @@ const tripsData = {
     }
 };
 
-// Globalne zmienne, które nadpiszemy przy kliknięciu (żeby render.js działał)
-let timelineData = [];
-let attractionsData = [];
-let budgetItems = [];
-let practicalData = [];
+
+// Globalne zmienne 
+let timelineData = tripsData.walbrzych.timeline;
+let attractionsData = tripsData.walbrzych.attractions;
+let budgetItems = tripsData.walbrzych.budget;
+let practicalData = tripsData.walbrzych.practical;

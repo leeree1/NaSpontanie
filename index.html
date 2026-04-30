@@ -90,7 +90,7 @@
       </div>
       <div class="relative z-10">
        <h2 id="finalCtaText" class="font-heading font-bold text-2xl sm:text-4xl text-white mb-4">Masz dzień wolny? To wystarczy.</h2>
-       <p class="text-blue-200 text-sm mb-6">Znajdź idealną wycieczkę w 30 sekund</p><button onclick="showDetail()" class="inline-flex items-center gap-2 px-6 py-3.5 bg-white text-primary font-semibold text-sm rounded-2xl hover:bg-gray-50 transition-all hover:shadow-lg"> <span id="finalCtaBtnText">Znajdź wycieczkę</span> <i data-lucide="arrow-right" class="w-4 h-4"></i> </button>
+       <p class="text-blue-200 text-sm mb-6">Znajdź idealną wycieczkę w 30 sekund</p><button onclick=""document.getElementById('trips').scrollIntoView({behavior: 'smooth'})" class="inline-flex items-center gap-2 px-6 py-3.5 bg-white text-primary font-semibold text-sm rounded-2xl hover:bg-gray-50 transition-all hover:shadow-lg"> <span id="finalCtaBtnText">Znajdź wycieczkę</span> <i data-lucide="arrow-right" class="w-4 h-4"></i> </button>
       </div>
      </div>
     </section><!-- FOOTER -->
@@ -106,7 +106,7 @@
      </div>
     </footer>
    </div><!-- /landingPage --> <!-- TRIP DETAIL PAGE -->
-   <div id="detailPage" class="hidden"><!-- Detail Navbar -->
+   <div id="detailPage" class="hidden bg-gray-50 min-h-screen"><!-- Detail Navbar -->
     <nav class="sticky top-0 z-50 backdrop-blur-md bg-white/80 border-b border-gray-100">
      <div class="max-w-4xl mx-auto px-4 sm:px-6 h-14 flex items-center gap-3"><button onclick="showLanding()" class="w-8 h-8 rounded-xl bg-gray-100 flex items-center justify-center hover:bg-gray-200 transition-colors"><i data-lucide="arrow-left" class="w-4 h-4"></i></button> <span class="font-heading font-semibold text-sm">Szczegóły wycieczki</span>
      </div>
@@ -115,41 +115,38 @@
      <div id="map-container" class="rounded-2xl overflow-hidden mb-6 relative bg-slate-100" style="height: 350px;">
       <svg class="absolute inset-0 w-full h-full" viewBox="0 0 800 350" fill="none">
             <!-- Główna linia trasy -->
-            <path d="M60,260 C180,150 350,250 500,180 S700,200 760,120" stroke="#2ECC71" stroke-width="3" fill="none" stroke-linecap="round" /> 
+            <path d="M60,260 C180,150 350,250 500,180 S700,200 760,120" stroke="#2ECC71" stroke-width="4" fill="none" stroke-linecap="round" style="filter: drop-shadow(0px 4px 4px rgba(0,0,0,0.5));"/> 
 
             <!-- Start: Wrocław Główny -->
             <circle cx="60" cy="260" r="8" fill="#FF7A00" />
             <circle cx="60" cy="260" r="4" fill="white" />
-            <text x="60" y="290" text-anchor="middle" font-size="11" fill="#FF7A00" stroke="white" stroke-width="3" paint-order="stroke" font-weight="700" font-family="DM Sans">Wrocław Główny</text>
+            <text x="60" y="290" text-anchor="middle" font-size="11" fill="#FF7A00" paint-order="stroke" font-weight="700" font-family="DM Sans" style="filter: drop-shadow(0px 2px 4px rgba(0,0,0,0.8));">Wrocław Główny</text>
 
             <!-- P1: Wałbrzych  -->
-            <circle id="dot-1" cx="170" cy="210" r="6" class="map-dot cursor-help fill-[#FB923C] hover:r-9 transition-all" data-info="Stacja docelowa Kolei Dolnośląskich. Ok. 1h 10min z Wrocławia."></circle> 
-            <text id="map-point-1" x="170" y="190" text-anchor="middle" font-size="10" fill="#FF7A00" stroke="white" stroke-width="3" paint-order="stroke" font-weight="600"></text>
+            <circle id="dot-1" cx="170" cy="210" r="6" class="map-dot cursor-pointer fill-[#FB923C] hover:fill-yellow-400 hover:stroke-white transition-all hover:stroke-[3px] duration-300" data-info="Stacja docelowa Kolei Dolnośląskich. Ok. 1h 10min z Wrocławia."></circle> 
+            <text id="map-point-1" x="170" y="190" text-anchor="middle" font-size="12" fill="#FF7A00" paint-order="stroke" font-weight="800" style="filter: drop-shadow(0px 2px 4px rgba(0,0,0,0.8));"></text>
 
             <!-- P2: Zamek Książ  -->
-            <circle id="dot-2" cx="280" cy="206" r="6" class="map-dot cursor-help fill-[#FB923C] hover:r-9 transition-all" data-info="Największy zamek w Polsce."></circle>
-            <text id="map-point-2" x="280" y="230" text-anchor="middle" font-size="10" fill="#FF7A00" stroke="white" stroke-width="3" paint-order="stroke" font-weight="600"></text>
-
+            <circle id="dot-2" cx="280" cy="206" r="6" class="map-dot cursor-pointer fill-[#FB923C] hover:fill-yellow-400 hover:stroke-white hover:stroke-[3px] transition-all duration-300" data-info="Największy zamek w Polsce."></circle>
+            <text id="map-point-2" x="280" y="230" text-anchor="middle" font-size="11.5" fill="#FF7A00" paint-order="stroke" font-weight="800" style="filter: drop-shadow(0px 2px 4px rgba(0,0,0,0.8));"></text>
             <!-- P3: Palmiarnia  -->
-            <circle id="dot-3" cx="390" cy="205" r="6" class="map-dot cursor-help fill-[#FB923C] hover:r-9 transition-all" data-info="Egzotyczny ogród z ponad 200 gatunkami roślin i lemurami."></circle>
-            <text id="map-point-3" x="390" y="190" text-anchor="middle" font-size="10" fill="#FF7A00" stroke="white" stroke-width="3" paint-order="stroke" font-weight="600"></text>
+            <circle id="dot-3" cx="390" cy="205" r="6" class="map-dot cursor-pointer fill-[#FB923C] hover:fill-yellow-400 hover:stroke-white hover:stroke-[3px] transition-all duration-300" data-info="Egzotyczny ogród z ponad 200 gatunkami roślin i lemurami."></circle>
+            <text id="map-point-3" x="390" y="190" text-anchor="middle" font-size="11.5" fill="#FF7A00" paint-order="stroke" font-weight="800" style="filter: drop-shadow(0px 2px 4px rgba(0,0,0,0.8));"></text>
 
             <!-- P4: Muzeum Porcelany  -->
-            <circle id="dot-4" cx="510" cy="175" r="6" class="map-dot cursor-help fill-[#FB923C] hover:r-9 transition-all" data-info="10 000 eksponatów. W poniedziałki wstęp jest bezpłatny!"></circle>
-            <text id="map-point-4" x="515" y="205" text-anchor="middle" font-size="10" fill="#FF7A00" stroke="white" stroke-width="3" paint-order="stroke" font-weight="600"></text>
-
+            <circle id="dot-4" cx="510" cy="175" r="6" class="map-dot cursor-pointer fill-[#FB923C] hover:fill-yellow-400 hover:stroke-white hover:stroke-[3px] transition-all duration-300" data-info="10 000 eksponatów. W poniedziałki wstęp jest bezpłatny!"></circle>
+            <text id="map-point-4" x="515" y="205" text-anchor="middle" font-size="11.5" fill="#FF7A00" paint-order="stroke" font-weight="800" style="filter: drop-shadow(0px 2px 4px rgba(0,0,0,0.8));"></text>
             <!-- P5: Stara Kopalnia  -->
-            <circle id="dot-5" cx="630" cy="150" r="6" class="map-dot cursor-help fill-[#FB923C] hover:r-9 transition-all" data-info="Zwiedzanie z byłym górnikiem. Trasa podziemna i wieża widokowa."></circle>
-            <text id="map-point-5" x="630" y="170" text-anchor="middle" font-size="10" fill="#FF7A00" stroke="white" stroke-width="3" paint-order="stroke" font-weight="600"></text>
-
+            <circle id="dot-5" cx="630" cy="150" r="6" class="map-dot cursor-pointer fill-[#FB923C] hover:fill-yellow-400 hover:stroke-white hover:stroke-[3px] transition-all duration-300" data-info="Zwiedzanie z byłym górnikiem. Trasa podziemna i wieża widokowa."></circle>
+            <text id="map-point-5" x="630" y="170" text-anchor="middle" font-size="11.5" fill="#FF7A00" paint-order="stroke" font-weight="800" style="filter: drop-shadow(0px 2px 4px rgba(0,0,0,0.8));"></text>
             <!-- P6: Wieża Widokowa  -->
-            <circle id="dot-6" cx="710" cy="155" r="6" class="map-dot cursor-help fill-[#FB923C] hover:r-9 transition-all" data-info="Nowość 2024! Panorama 360 stopni na Wałbrzych i Sudety."></circle>
-            <text id="map-point-6" x="715" y="185" text-anchor="middle" font-size="10" fill="#FF7A00" stroke="white" stroke-width="3" paint-order="stroke" font-weight="600"></text>
+            <circle id="dot-6" cx="710" cy="155" r="6" class="map-dot cursor-pointer fill-[#FB923C] hover:fill-yellow-400 hover:stroke-white hover:stroke-[3px] transition-all duration-300" data-info="Nowość 2024! Panorama 360 stopni na Wałbrzych i Sudety."></circle>
+            <text id="map-point-6" x="715" y="185" text-anchor="middle" font-size="12" fill="#FF7A00" paint-order="stroke" font-weight="800" style="filter: drop-shadow(0px 2px 4px rgba(0,0,0,0.8));"></text>
 
             <!-- P7: Powrót  -->
             <circle cx="760" cy="120" r="8" fill="#FF7A00" />
             <circle cx="760" cy="120" r="4" fill="white" />
-            <text id="map-point-7" x="795" y="100" text-anchor="end" font-size="10" fill="#FF7A00" stroke="white" stroke-width="3" paint-order="stroke" font-weight="700"></text>
+            <text id="map-point-7" x="795" y="100" text-anchor="end" font-size="10" fill="#FF7A00" paint-order="stroke" font-weight="700"></text>
        </svg>
 
        <!-- Dynamiczny Tooltip (małe okno) -->
@@ -175,7 +172,7 @@
                 <div class="text-xs text-gray-400 trip-transport-val">transport</div>
             </div>
         </div>
-     </div><!-- Timeline -->
+    <!-- Timeline -->
      <div class="mb-8">
       <h2 class="font-heading font-bold text-xl mb-4">Plan dnia</h2>
       <div class="space-y-0" id="timeline"></div>
@@ -188,7 +185,7 @@
       <h2 class="font-heading font-bold text-xl mb-4">Budżet</h2>
       <div class="bg-white rounded-2xl border border-gray-100 p-5">
        <div class="space-y-3" id="budgetList"></div>
-       <div class="border-t border-gray-100 mt-4 pt-4 flex justify-between font-bold"><span>Łącznie</span><span class="text-primary text-lg"> 165 zł</span>
+       <div class="border-t border-gray-100 mt-4 pt-4 flex justify-between font-bold"><span>Łącznie</span><span class="text-primary text-lg"></span>
        </div>
       </div>
      </div><!-- Practical Info -->
@@ -197,10 +194,12 @@
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-3" id="practicalInfo"></div>
      </div><!-- Reviews -->
      </div><!-- Bottom CTA -->
-     <div class="sticky bottom-4 z-40 flex justify-center px-4"><button class="w-auto px-8 py-3 bg-primary text-white font-semibold rounded-2xl hover:bg-blue-700 transition-all shadow-lg shadow-primary/20 flex items-center justify-center gap-2 text-sm"> <i data-lucide="navigation" class="w-4 h-4"></i> Zaplanuj tę wycieczkę </button>
+     <div class="sticky bottom-4 z-40 flex justify-center px-4">
+        <button class="w-auto px-8 py-3 bg-primary text-white font-semibold rounded-2xl hover:bg-blue-700 transition-all shadow-lg shadow-primary/20 flex items-center justify-center gap-2 text-sm">
+             <i data-lucide="navigation" class="w-4 h-4"></i> Zaplanuj tę wycieczkę 
+            </button>
      </div>
      <div class="h-8"></div>
-    </div>
    </div><!-- /detailPage -->
   </div><!-- /appRoot -->
 

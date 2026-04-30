@@ -1,7 +1,6 @@
 // Render trip cards (Główna lista na landing page)
 function renderCards(tripsToRender) {
     const grid = document.getElementById('tripsGrid');
-    if (!grid) return;
 
     grid.innerHTML = tripsToRender.map(t => `
         <div onclick="showDetail('${t.id}')" class="cursor-pointer bg-white rounded-3xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-all fade-up">
@@ -25,7 +24,8 @@ function renderCards(tripsToRender) {
 }
 
 // Render detail sections (Widok szczegółów wycieczki)
-function renderDetail() {
+function renderDetail(trip) {
+    if (!trip) return;
     // 1. Stars/Rating (Z bezpiecznikiem)
     const sc = document.getElementById('starsContainer');
     if (sc) {
@@ -38,11 +38,11 @@ function renderDetail() {
     const timelineContainer = document.getElementById('timeline');
     if (timelineContainer) {
         const colors = { transport:'#2563EB', walk:'#10B981', sight:'#FB923C', food:'#FACC15' };
-        timelineContainer.innerHTML = timelineData.map((t,i) => `
+        timelineContainer.innerHTML = trip.timeline.map((t,i) => `
             <div class="flex gap-4 items-start">
                 <div class="flex flex-col items-center">
                     <div class="timeline-dot border-2" style="border-color:${colors[t.type]};background:${i===0?colors[t.type]:'white'}"></div>
-                    ${i < timelineData.length - 1 ? '<div class="w-px flex-1 bg-gray-200" style="min-height:32px"></div>' : ''}
+                    ${i < trip.timeline.length - 1 ? '<div class="w-px flex-1 bg-gray-200" style="min-height:32px"></div>' : ''}
                 </div>
                 <div class="pb-5">
                     <div class="text-xs font-bold text-gray-400 mb-0.5">${t.time}</div>
@@ -56,7 +56,7 @@ function renderDetail() {
     const attractionsContainer = document.getElementById('attractions');
     if (attractionsContainer) {
         const attrColors = ['#dbeafe','#fef9c3','#fce7f3','#e0f2fe','#f0fdf4'];
-        attractionsContainer.innerHTML = attractionsData.map((a,i) => `
+        attractionsContainer.innerHTML = trip.attractions.map((a,i) => `
             <div class="bg-white rounded-2xl border border-gray-100 overflow-hidden hover:shadow-md transition-shadow">
                 <div class="h-24 flex items-center justify-center" style="background:${attrColors[i % attrColors.length]}">
                     <i data-lucide="${a.icon}" class="w-8 h-8 text-gray-400 opacity-40"></i>
@@ -72,7 +72,7 @@ function renderDetail() {
     // 4. Budget (Z bezpiecznikiem)
     const budgetContainer = document.getElementById('budgetList');
     if (budgetContainer) {
-        budgetContainer.innerHTML = budgetItems.map(b => `
+        budgetContainer.innerHTML = trip.budget.map(b => `
             <div class="flex items-center justify-between">
                 <div class="flex items-center gap-3">
                     <div class="w-8 h-8 bg-gray-50 rounded-xl flex items-center justify-center">
@@ -88,7 +88,7 @@ function renderDetail() {
     // 5. Practical Info (Z bezpiecznikiem)
     const practicalContainer = document.getElementById('practicalInfo');
     if (practicalContainer) {
-        practicalContainer.innerHTML = practicalData.map(p => `
+        practicalContainer.innerHTML = trip.practical.map(p => `
             <div class="bg-white rounded-xl border border-gray-100 p-4 flex items-start gap-3">
                 <div class="w-8 h-8 bg-gray-50 rounded-xl flex items-center justify-center flex-shrink-0">
                     <i data-lucide="${p.icon}" class="w-4 h-4 text-gray-400"></i>
@@ -135,14 +135,11 @@ const observer = new IntersectionObserver((entries) => {
 
 // Funkcja startowa
 async function initApp() {
-    // Sprawdzamy czy MockAPI istnieje (zależność od sdk.js)
-    if (typeof MockAPI !== 'undefined') {
-        const data = await MockAPI.fetchTrips();
-        renderCards(data);
-    }
     
-    // Renderujemy detale (dane z data.js)
-    renderDetail();
+    const defaultTrip = tripsData['walbrzych'];
+    if (defaultTrip) {
+        renderDetail(defaultTrip);
+    }
     
     // Odpalamy obserwatora animacji
     document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));

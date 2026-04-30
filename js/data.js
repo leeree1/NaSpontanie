@@ -2,13 +2,14 @@ const tripsData = {
     "walbrzych": {
         city: "Wałbrzych",
         distance: "Wrocław Główny → Wałbrzych",
-        price: "120 zł",
-        duration: "7h",
+        price: "150 zł",
+        duration: "10h",
         transport: "pociąg + bus",
+        mapLabels: ["Zamek Książ", "Palmiarnia", "Muzeum Porcelany", "Stara Kopalnia", "Wieża Widokowa"],
         timeline: [
             { time: '7:30', label: 'Wyjazd pociągiem z Wrocławia', type: 'transport' },
             { time: '9:00', label: 'Zamek Książ — zwiedzanie', type: 'sight' },
-            { time: '11:15', label: 'Palmiarnia — egzotyczny ogród', type: 'sight' },
+            { time: '11:15', label: 'Palmiarnia — spacer leśną ścieżką', type: 'sight' },
             { time: '13:00', label: 'Muzeum Porcelany', type: 'sight' },
             { time: '14:15', label: 'Stara Kopalnia — podziemia', type: 'sight' },
             { time: '17:00', label: 'Wieża Widokowa — panorama', type: 'sight' },
@@ -20,13 +21,13 @@ const tripsData = {
             { title: 'Stara Kopalnia', desc: 'Centrum Nauki i Sztuki.', icon: 'hammer' }
         ],
         budget: [
-            { label: 'Pociąg (obie strony)', amount: '35 zł', icon: 'train' },
-            { label: 'Bilet Explore Wałbrzych', amount: '75 zł', icon: 'ticket' },
-            { label: 'Inne wydatki', amount: '10 zł', icon: 'circle' }
+            { label: 'Bilety KD (Wrocław <-> Wałbrzych)', amount: '58 zł', icon: 'train' },
+            { label: 'Bilet Explore (ulgowy/firmowy)', amount: '87 zł', icon: 'ticket' },
+            { label: 'Transport lokalny (bus)', amount: '5 zł', icon: 'bus' }
         ],
         practical: [
-            { label: 'Bilety', value: 'Kup bilet Explore Wałbrzych', icon: 'ticket' },
-            { label: 'Dojazd', value: 'Linia nr 8 do Zamku', icon: 'bus' }
+            { label: 'Rezerwacja', value: 'Stara Kopalnia: zarezerwuj bilet online!', icon: 'ticket' },
+            { label: 'Pro-Tip', value: 'W poniedziałek Muzeum Porcelany jest gratis.', icon: 'sparkles' },
         ]
     },
     "swidnica": {

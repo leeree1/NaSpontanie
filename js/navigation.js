@@ -7,13 +7,26 @@ function showLanding() {
 function showDetail(tripId) {
     // 1. Pobierz dane miasta
     const trip = tripsData[tripId];
-    if (!trip) return;
+    if (!trip) {
+        console.error("Nie znaleziono wycieczki o ID:", tripId);
+        return;
+    }
 
     // 2. dane globalne dla render.js
     timelineData = trip.timeline;
     attractionsData = trip.attractions;
     budgetItems = trip.budget;
     practicalData = trip.practical;
+
+    // zamiast punktu 1 widze np Zamek Ksiaz
+    if (trip.mapLabels) {
+        trip.mapLabels.forEach((label, index) => {
+            const pointElement = document.getElementById(`map-point-${index + 1}`);
+            if (pointElement) {
+                pointElement.textContent = label;
+            }
+        });
+    }
 
     // 3. nagłówki w HTML bezpośrednio
     document.querySelector('#detailPage h1').innerText = trip.city;

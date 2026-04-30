@@ -1,11 +1,12 @@
 const tripsData = {
     "walbrzych": {
         city: "Wałbrzych",
+        bgImage: "https://polskapogodzinach.pl/wp-content/uploads/2022/01/walbrzych-panorama-miasta.jpg",
         distance: "Wrocław Główny → Wałbrzych",
         price: "150 zł",
         duration: "10h",
         transport: "pociąg + bus",
-        mapLabels: ["Zamek Książ", "Palmiarnia", "Muzeum Porcelany", "Stara Kopalnia", "Wieża Widokowa"],
+        mapLabels: ["Wałbrzych", "Zamek Książ", "Palmiarnia", "Muzeum Porcelany", "Stara Kopalnia", "Wieża Widokowa", "Wrocław Główny"],
         timeline: [
             { time: '7:30', label: 'Wyjazd pociągiem z Wrocławia', type: 'transport' },
             { time: '9:00', label: 'Zamek Książ — zwiedzanie', type: 'sight' },
@@ -36,6 +37,7 @@ const tripsData = {
         price: "90 zł",
         duration: "5h",
         transport: "pociąg",
+        mapLabels: ["Kościół Pokoju", "Rynek", "Katedra"], // tu zmieniasz/dodajesz miasta do mapki
         timeline: [
             { time: '9:30', label: 'Pociąg z Wrocławia', type: 'transport' },
             { time: '10:45', label: 'Kościół Pokoju (UNESCO)', type: 'sight' },

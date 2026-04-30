@@ -31,11 +31,10 @@ tailwind.config = {
   theme: {
     extend: {
       colors: {
-        primary: '#0000FF',
-        secondary: '#FACC15',
-        accent: '#FB923C',
-        bglight: '#FAFAFA',
-        dark: '#111827'
+        primary: '#FF7A00',
+        secondary: '#2ECC71',
+        dark: '#1f1f1f', 
+        offwhite: '#ECE4E2',
       },
       fontFamily: {
         heading: ['Fraunces', 'serif'],

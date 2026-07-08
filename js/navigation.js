@@ -88,6 +88,22 @@ function showDetail(tripId) {
     const startDot = document.getElementById('start-dot');
     const startDotInner = document.getElementById('start-dot-inner');
     const startText = document.getElementById('start-text');
+
+    if (startText) {
+        startText.setAttribute('x', 60); 
+        startText.setAttribute('y', 180);
+        
+        // POBIERAMY DYNAMICZNIE NAZWĘ: 
+        // Jeśli AI zwróciło w obiekcie "startLocation", bierzemy ją. 
+        // Jeśli nie, wyciągamy tekst bezpośrednio z wybranego filtra transportu!
+        const transportSelect = document.getElementById('filter-transport');
+        const selectedFilterText = transportSelect.options[transportSelect.selectedIndex].text;
+        
+        // Wyciągamy człon po słowie "ze " (np. z "Pociąg ze Świdnicy" wyciągnie "Świdnica")
+        const fallbackStart = selectedFilterText.includes(" ze ") ? selectedFilterText.split(" ze ")[1] : "Wrocław";
+
+        startText.textContent = trip.startLocation || fallbackStart;
+    }
     
     if (startDot) startDot.setAttribute('cx', 60);
     if (startDot) startDot.setAttribute('cy', 200);
@@ -95,7 +111,7 @@ function showDetail(tripId) {
     if (startDotInner) startDotInner.setAttribute('cy', 200);
     if (startText) {
         startText.setAttribute('x', 60); 
-        startText.setAttribute('y', 180); // Napis nad kropką startową
+        startText.setAttribute('y', 180); 
     }
 
     // 4. GENEROWANIE KRZYWEJ ŚCIEŻKI SVG NA PODSTAWIE KOORDYNATÓW OD GEMINI

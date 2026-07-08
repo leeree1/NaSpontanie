@@ -1,3 +1,4 @@
+// api/generate-trip.js
 
 export default async function handler(req, res) {
   // Akceptujemy tylko żądania typu POST

@@ -29,8 +29,7 @@
 
     <section class="px-4 sm:px-6 py-12 max-w-6xl mx-auto fade-up mt-4">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div onclick="alert('Kreator wycieczek wkrótce!')" class="cursor-pointer group relative overflow-hidden bg-gradient-to-br from-orange-50 to-orange-100 rounded-3xl p-8 border border-orange-200 shadow-sm hover:shadow-lg transition-all duration-300">
-                <div class="absolute -right-6 -top-6 opacity-10 group-hover:scale-110 transition-transform duration-500">
+        <div onclick="toggleCreator()" class="cursor-pointer group relative overflow-hidden bg-gradient-to-br from-orange-50 to-orange-100 rounded-3xl p-8 border border-orange-200 shadow-sm hover:shadow-lg transition-all duration-300">                <div class="absolute -right-6 -top-6 opacity-10 group-hover:scale-110 transition-transform duration-500">
                     <i data-lucide="blocks" class="w-40 h-40 text-orange-600"></i>
                 </div>
                 <div class="w-14 h-14 bg-white rounded-2xl flex items-center justify-center mb-6 shadow-sm relative z-10">
@@ -73,6 +72,93 @@
             Znajdź wycieczkę <i data-lucide="arrow-right" class="w-5 h-5"></i>
         </button>
     </section>
+
+<!-- UKRYTY KREATOR WYCIECZEK Z INTERFEJSEM DLA AGENTA AI (KLASA HIDDEN) -->
+    <section id="creator-section" class="px-4 sm:px-6 py-16 bg-white border-t border-gray-100 max-w-6xl mx-auto rounded-[2rem] shadow-sm mb-12 hidden">
+        <div class="mb-8">
+            <h2 class="font-heading font-bold text-3xl mb-2">Sklej swój plan podróży</h2>
+            <p class="text-gray-500 text-sm">Ustaw parametry. Agent AI przeczesze internet i wygeneruje unikalną trasę w czasie rzeczywistym.</p>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+            <!-- PANEL FILTRÓW -->
+            <div class="md:col-span-1 bg-gray-50 p-6 rounded-2xl border border-gray-100">
+                <div class="mb-6">
+                    <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Klimat / Miejsce</label>
+                    <select id="filter-climate" class="w-full bg-white border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-orange-500">
+                        <option value="mountains" selected>⛰️ Góry / Szlaki piesze</option>
+                        <option value="city">🏛️ Zabytki / Miasto</option>
+                        <option value="nature">🌳 Natura / Relaks</option>
+                    </select>
+                </div>
+
+                <div class="mb-6">
+                    <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Kondycja / Trudność</label>
+                    <div class="space-y-2">
+                        <label class="flex items-center gap-2 text-sm cursor-pointer p-1.5 hover:bg-gray-100 rounded-lg">
+                            <input type="radio" name="difficulty" value="easy" class="text-orange-500 focus:ring-orange-500">
+                            <span>Spacerowy (Lajtowy)</span>
+                        </label>
+                        <label class="flex items-center gap-2 text-sm cursor-pointer p-1.5 hover:bg-gray-100 rounded-lg">
+                            <input type="radio" name="difficulty" value="medium" class="text-orange-500 focus:ring-orange-500">
+                            <span>Średni (Wysiłek)</span>
+                        </label>
+                        <label class="flex items-center gap-2 text-sm cursor-pointer p-1.5 bg-orange-50 border border-orange-200 text-orange-700 font-medium rounded-lg px-2">
+                            <input type="radio" name="difficulty" value="hard" checked class="text-orange-500 focus:ring-orange-500">
+                            <span>💪 Dla silnych (Cały dzień)</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="mb-6">
+                    <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Budżet maksymalny</label>
+                    <div class="flex items-center gap-2">
+                        <input id="filter-budget" type="range" min="50" max="400" value="150" class="w-full accent-orange-500" oninput="document.getElementById('budget-val').innerText = this.value + ' zł'">
+                        <span id="budget-val" class="text-xs font-bold text-gray-600 min-w-[50px] text-right">150 zł</span>
+                    </div>
+                </div>
+
+                <div class="mb-6">
+                    <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Czas trwania</label>
+                    <select id="filter-duration" class="w-full bg-white border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-orange-500">
+                        <option value="short">Krótki wypad (do 4h)</option>
+                        <option value="medium">Średni dzień (4h - 7h)</option>
+                        <option value="full" selected>Intensywny (cały dzień 8h+)</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Środek transportu</label>
+                    <select id="filter-transport" class="w-full bg-white border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-orange-500">
+                        <option value="train" selected>🚆 Pociąg / Transport publiczny</option>
+                        <option value="car">🚗 Samochód własny</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- OKNO GENERATORA AGENTA (LĄDOWANIE WYNIKU) -->
+            <div class="md:col-span-3 flex flex-col justify-between bg-gray-50/50 rounded-2xl p-8 border-2 border-dashed border-gray-200 min-h-[350px]">
+                <div id="creator-placeholder" class="text-center py-12 my-auto">
+                    <div class="w-16 h-16 bg-orange-100 text-orange-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                       
+                    </div>
+                    <h3 class="font-bold text-xl text-dark mb-1">Gotowy na coś unikalnego?</h3>
+                    <p class="text-gray-500 text-sm max-w-sm mx-auto mb-6">Kliknij przycisk poniżej. Zaktualizowana trasa na podstawie wybranych filtrów.</p>
+                    
+                    <button onclick="generateAiTrip()" class="bg-orange-500 text-white px-8 py-4 rounded-2xl font-bold text-sm hover:bg-orange-600 transition-all shadow-xl shadow-orange-500/20 inline-flex items-center gap-2">
+                     <i data-lucide="sparkles" class="w-8 h-8"></i>
+                    </button>
+                </div>
+
+                <!-- ANIMOWANY LOADER PODCZAS GENEROWANIA PRZEZ AI -->
+                <div id="creator-loader" class="hidden text-center py-16 my-auto">
+                    <div class="inline-block animate-spin rounded-full h-10 w-10 border-4 border-orange-500 border-t-transparent mb-4"></div>
+                    <p class="text-sm text-gray-400 mt-1 max-w-xs mx-auto">Sprawdzamy rozkłady jazdy, warunki na szlakach oraz aktualne ceny wstępów do parków narodowych.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
 
     <section class="px-4 sm:px-6 py-20 bg-white border-y border-gray-100 fade-up">
         <div class="max-w-3xl mx-auto text-center">

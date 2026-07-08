@@ -7,6 +7,10 @@ export default async function handler(req, res) {
   const { climate, budget, duration, transport, difficulty } = req.body;
   const apiKey = process.env.GEMINI_API_KEY;
 
+  if (!apiKey) {
+    return res.status(500).json({ message: "Brak klucza GEMINI_API_KEY w konfiguracji Vercela!" });
+  }
+
   try {
     const prompt = `Zaplanuj jednodniową wycieczkę w Polsce o następujących kryteriach:
     - Klimat/Miejsce: ${climate}
@@ -15,11 +19,10 @@ export default async function handler(req, res) {
     - Środek transportu: ${transport}
     - Poziom trudności fizycznej: ${difficulty}
     
-    Sam dobierz idealne miejsce. Wygeneruj kompletny plan dnia w formacie JSON. 
-    Zwrot ma być czystym obiektem JSON, bez żadnych znaków markdownu typu \`\`\`json.
-    Struktura musi wyglądać dokładnie tak:
+    Sam dobierz idealne miasto lub region w Polsce. Wygeneruj kompletny plan dnia jako obiekt JSON. 
+    Struktura musi wyglądać DOKŁADNIE tak, zachowaj te same klucze:
     {
-      "id": "wygenerowane_id_miasta",
+      "id": "unikalne_id_wycieczki",
       "city": "Nazwa miejsca",
       "distance": "Krótki podtytuł trasy",
       "price": "Łączny koszt (np. 120 zł)",
@@ -35,24 +38,37 @@ export default async function handler(req, res) {
       "practical": [{ "title": "Porada", "desc": "Treść" }]
     }`;
 
-    // Oficjalne zapytanie HTTP do darmowego API Gemini (nie potrzebujesz instalować dodatkowych paczek npm!)
     const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         contents: [{ parts: [{ text: prompt }] }],
-        generationConfig: { responseMimeType: "application/json" } // Wymuszamy format JSON
+        generationConfig: { 
+          responseMimeType: "application/json"
+        }
       })
     });
 
     const data = await response.json();
-    const responseText = data.candidates[0].content.parts[0].text;
-    const tripData = JSON.parse(responseText);
     
+    // BEZPIECZNE SPRAWDZENIE: Czy Google nie zwróciło błędu struktury lub blokady
+    if (!data.candidates || !data.candidates[0] || !data.candidates[0].content || !data.candidates[0].content.parts || !data.candidates[0].content.parts[0]) {
+      console.error("Nieprawidłowa odpowiedź z API Gemini:", JSON.stringify(data));
+      return res.status(500).json({ message: "Gemini zwróciło pustą odpowiedź. Prawdopodobnie blokada filtrów bezpieczeństwa Google." });
+    }
+
+    let responseText = data.candidates[0].content.parts[0].text.trim();
+    
+    // ODRAZU OCZYSZCZAMY Z ENKAPSULACJI MARKDOWN (gdyby Gemini i tak dodało ```json)
+    if (responseText.startsWith("```")) {
+      responseText = responseText.replace(/^```json/, "").replace(/^```/, "").replace(/```$/, "").trim();
+    }
+
+    const tripData = JSON.parse(responseText);
     return res.status(200).json(tripData);
 
   } catch (error) {
-    console.error("Błąd darmowego Agenta Gemini:", error);
-    return res.status(500).json({ message: "Agent Gemini nie dał rady." });
+    console.error("Pełny błąd parsowania danych:", error);
+    return res.status(500).json({ message: "Agent napotkał problem przy przetwarzaniu struktury wycieczki." });
   }
 }

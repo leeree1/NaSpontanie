@@ -2,14 +2,6 @@
 
 // GŁÓWNA FUNKCJA URUCHAMIAJĄCA RENDEROWANIE SZCZEGÓŁÓW
 function renderDetail(trip) {
-    // 1. WYMUSZONE USTAWIANIE ZDJĘCIA W TLE MAPY (INLINE, ŻEBY OMINĄĆ BLOKADY CSS)
-    const mapContainer = document.getElementById('map-container');
-    if (mapContainer && trip.bgImage) {
-        mapContainer.style.backgroundImage = `url('${trip.bgImage}')`;
-        mapContainer.style.backgroundSize = 'cover';
-        mapContainer.style.backgroundPosition = 'center';
-        mapContainer.style.backgroundRepeat = 'no-repeat';
-    }
 
     // 2. URUCHOMIENIE POSZCZEGÓLNYCH SEKCJI
     if (trip.timeline) renderTimeline(trip.timeline);

@@ -68,13 +68,31 @@ function showDetail(tripId) {
         return;
     }
 
-    // 1. USTAWIANIE DYNAMICZNEGO OBRAZKA W TLE MAPY
-    const mapContainer = document.getElementById('map-container');
-    if (mapContainer && trip.bgImage) {
-        mapContainer.style.backgroundImage = `url('${trip.bgImage}')`;
-        mapContainer.style.backgroundSize = 'cover';
-        mapContainer.style.backgroundPosition = 'center';
+    // 1. DYNAMICZNE I INTELIGENTNE USTAWIANIE ZDJĘCIA W TLE MAPY
+const mapContainer = document.getElementById('map-container');
+if (mapContainer) {
+    // Pobieramy nazwę wygenerowanego miasta/regionu (np. "Kłodzko, Kotlina Kłodzka")
+    const cityName = trip.city || "poland";
+    
+    // Oczyszczamy nazwę z polskich znaków i spacji do bezpiecznego zapytania URL
+    const searchCityQuery = encodeURIComponent(cityName.toLowerCase()
+        .replace(/ł/g, 'l').replace(/[ąά]/g, 'a').replace(/ę/g, 'e')
+        .replace(/ć/g, 'c').replace(/ń/g, 'n').replace(/ó/g, 'o')
+        .replace(/ś/g, 's').replace(/[źż]/g, 'z')
+        .trim());
+
+    // Sprawdzamy, czy Gemini dało poprawny link, jeśli nie lub jest generyczny - generujemy automatyczny na podstawie nazwy miasta
+    let bgImgUrl = trip.bgImage;
+    if (!bgImgUrl || bgImgUrl.includes('photo-X') || bgImgUrl.includes('photo-1506744038136-46273834b3fb')) {
+        bgImgUrl = `https://source.unsplash.com/featured/1200x500/?${searchCityQuery},poland,landscape`;
     }
+
+    // Wstrzykujemy ostro i pewnie prosto w style kontenera
+    mapContainer.style.backgroundImage = `url('${bgImgUrl}')`;
+    mapContainer.style.backgroundSize = 'cover';
+    mapContainer.style.backgroundPosition = 'center';
+    mapContainer.style.backgroundRepeat = 'no-repeat';
+}
 
     // 2. WYRESETOWANIE I UKRYCIE WSZYSTKICH 6 KROPEK NA SZABLONIE MAPY
     for (let i = 1; i <= 6; i++) {

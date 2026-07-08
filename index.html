@@ -13,10 +13,8 @@
  <body class="h-full font-body text-dark" style="background:#FAFAFA;">
   <div class="app-root" id="appRoot">
       
-   <!-- LANDING PAGE -->
    <div id="landingPage">
        
-    <!-- NAVBAR -->
     <nav class="sticky top-0 z-50 backdrop-blur-md bg-white/80 border-b border-gray-100" style="font-family: var(--font-body, 'DM Sans', sans-serif);">
      <div class="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
          <a href="#" class="flex items-center gap-2 group" onclick="event.preventDefault(); showLanding();">
@@ -31,49 +29,38 @@
      </div>
     </nav>
 
-
-    <!-- NOWA SEKCJA: WYBÓR ŚCIEŻKI -->
-<section class="px-4 sm:px-6 py-12 max-w-6xl mx-auto fade-up mt-4">
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-
-        <!-- Opcja 1: Zbuduj własny plan (Kreator) -->
-        <div onclick="alert('Kreator wycieczek wkrótce!')" class="cursor-pointer group relative overflow-hidden bg-gradient-to-br from-orange-50 to-orange-100 rounded-3xl p-8 border border-orange-200 shadow-sm hover:shadow-lg transition-all duration-300">
-            <!-- Dekoracyjna ikona w tle -->
-            <div class="absolute -right-6 -top-6 opacity-10 group-hover:scale-110 transition-transform duration-500">
-                <i data-lucide="blocks" class="w-40 h-40 text-orange-600"></i>
+    <section class="px-4 sm:px-6 py-12 max-w-6xl mx-auto fade-up mt-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div onclick="alert('Kreator wycieczek wkrótce!')" class="cursor-pointer group relative overflow-hidden bg-gradient-to-br from-orange-50 to-orange-100 rounded-3xl p-8 border border-orange-200 shadow-sm hover:shadow-lg transition-all duration-300">
+                <div class="absolute -right-6 -top-6 opacity-10 group-hover:scale-110 transition-transform duration-500">
+                    <i data-lucide="blocks" class="w-40 h-40 text-orange-600"></i>
+                </div>
+                <div class="w-14 h-14 bg-white rounded-2xl flex items-center justify-center mb-6 shadow-sm relative z-10">
+                    <i data-lucide="plus-square" class="w-7 h-7 text-orange-500"></i>
+                </div>
+                <h2 class="font-heading font-bold text-2xl mb-2 text-dark relative z-10">Sklej swój plan</h2>
+                <p class="text-gray-700 mb-6 relative z-10">Wybieraj atrakcje jak klocki Lego. Dodaj to, co lubisz, dorzuć event z okolicy i stwórz autorski wyjazd.</p>
+                <span class="inline-flex items-center gap-2 font-semibold text-orange-600 relative z-10">
+                    Otwórz kreator <i data-lucide="arrow-right" class="w-4 h-4 group-hover:translate-x-1 transition-transform"></i>
+                </span>
             </div>
-            
-            <div class="w-14 h-14 bg-white rounded-2xl flex items-center justify-center mb-6 shadow-sm relative z-10">
-                <i data-lucide="plus-square" class="w-7 h-7 text-orange-500"></i>
+
+            <div onclick="document.getElementById('trips').scrollIntoView({behavior: 'smooth'})" class="cursor-pointer group relative overflow-hidden bg-white rounded-3xl p-8 border border-gray-100 shadow-sm hover:shadow-lg transition-all duration-300">
+                <div class="absolute -right-6 -top-6 opacity-[0.03] group-hover:scale-110 transition-transform duration-500">
+                    <i data-lucide="map" class="w-40 h-40 text-blue-600"></i>
+                </div>
+                <div class="w-14 h-14 bg-blue-50 rounded-2xl flex items-center justify-center mb-6 relative z-10">
+                    <i data-lucide="zap" class="w-7 h-7 text-primary"></i>
+                </div>
+                <h2 class="font-heading font-bold text-2xl mb-2 text-dark relative z-10">Biorę gotowca</h2>
+                <p class="text-gray-500 mb-6 relative z-10">Nie masz czasu planować? Wybierz jeden z naszych sprawdzonych, gotowych planów i po prostu jedź.</p>
+                <span class="inline-flex items-center gap-2 font-semibold text-primary relative z-10">
+                    Pokaż plany <i data-lucide="arrow-down" class="w-4 h-4 group-hover:translate-y-1 transition-transform"></i>
+                </span>
             </div>
-            <h2 class="font-heading font-bold text-2xl mb-2 text-dark relative z-10">Sklej swój plan</h2>
-            <p class="text-gray-700 mb-6 relative z-10">Wybieraj atrakcje jak klocki Lego. Dodaj to, co lubisz, dorzuć event z okolicy i stwórz autorski wyjazd.</p>
-            <span class="inline-flex items-center gap-2 font-semibold text-orange-600 relative z-10">
-                Otwórz kreator <i data-lucide="arrow-right" class="w-4 h-4 group-hover:translate-x-1 transition-transform"></i>
-            </span>
         </div>
+    </section>
 
-        <!-- Opcja 2: Biorę gotowca -->
-        <div onclick="document.getElementById('trips').scrollIntoView({behavior: 'smooth'})" class="cursor-pointer group relative overflow-hidden bg-white rounded-3xl p-8 border border-gray-100 shadow-sm hover:shadow-lg transition-all duration-300">
-            <!-- Dekoracyjna ikona w tle -->
-            <div class="absolute -right-6 -top-6 opacity-[0.03] group-hover:scale-110 transition-transform duration-500">
-                <i data-lucide="map" class="w-40 h-40 text-blue-600"></i>
-            </div>
-
-            <div class="w-14 h-14 bg-blue-50 rounded-2xl flex items-center justify-center mb-6 relative z-10">
-                <i data-lucide="zap" class="w-7 h-7 text-primary"></i>
-            </div>
-            <h2 class="font-heading font-bold text-2xl mb-2 text-dark relative z-10">Biorę gotowca</h2>
-            <p class="text-gray-500 mb-6 relative z-10">Nie masz czasu planować? Wybierz jeden z naszych sprawdzonych, gotowych planów i po prostu jedź.</p>
-            <span class="inline-flex items-center gap-2 font-semibold text-primary relative z-10">
-                Pokaż plany <i data-lucide="arrow-down" class="w-4 h-4 group-hover:translate-y-1 transition-transform"></i>
-            </span>
-        </div>
-
-    </div>
-</section>
-
-    <!-- 1. HERO SECTION (Zaczepka) -->
     <section class="px-4 sm:px-6 py-20 md:py-32 max-w-4xl mx-auto text-center fade-up">
         <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-orange-50 text-orange-600 text-xs font-bold uppercase tracking-wider mb-8">
             <i data-lucide="map-pin" class="w-4 h-4"></i> Twój osobisty przewodnik
@@ -89,15 +76,12 @@
         </button>
     </section>
 
-    <!-- 2. PROBLEM SECTION (Ból klienta) -->
     <section class="px-4 sm:px-6 py-20 bg-white border-y border-gray-100 fade-up">
         <div class="max-w-3xl mx-auto text-center">
             <h2 class="font-heading font-bold text-3xl sm:text-4xl mb-12 leading-tight">
                 Znasz to uczucie, kiedy chcesz gdzieś wyskoczyć, <br><span class="text-gray-400 text-2xl sm:text-3xl mt-2 block">ale PLANOWANIE zabiera całą frajdę?</span>
             </h2>
-            
             <p class="text-sm font-bold text-gray-400 uppercase tracking-widest mb-6">Trzeba samemu znaleźć:</p>
-            
             <div class="space-y-4 text-left max-w-md mx-auto mb-12">
                 <div class="flex items-center gap-4 p-5 bg-gray-50 rounded-2xl border border-gray-100 shadow-sm">
                     <div class="w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-sm text-gray-400"><i data-lucide="bed-double" class="w-5 h-5"></i></div>
@@ -116,17 +100,13 @@
         </div>
     </section>
 
-    <!-- 3. ROZWIĄZANIE & JAK TO DZIAŁA -->
     <section id="how" class="px-4 sm:px-6 py-20 max-w-5xl mx-auto fade-up">
         <div class="text-center mb-16">
             <h2 class="font-heading font-bold text-3xl sm:text-5xl mb-4">Właśnie dlatego stworzyliśmy <span class="text-orange-500">NaSpontanie</span>.</h2>
             <p class="text-gray-500 text-lg">Aplikację, która ogarnie absolutnie wszystko za Ciebie.</p>
         </div>
-        
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 relative">
-            <!-- Linia łącząca na desktopie -->
             <div class="hidden md:block absolute top-1/2 left-0 w-full h-0.5 bg-dashed border-t-2 border-dashed border-gray-200 z-0"></div>
-
             <div class="bg-white p-8 rounded-3xl border border-gray-100 text-center shadow-lg shadow-gray-100/50 relative z-10 hover:-translate-y-1 transition-transform">
                 <div class="w-16 h-16 bg-gray-50 text-gray-600 rounded-2xl flex items-center justify-center mx-auto mb-6"><i data-lucide="sliders-horizontal" class="w-8 h-8"></i></div>
                 <h3 class="font-bold text-xl mb-3">Ty wybierasz</h3>
@@ -145,7 +125,6 @@
         </div>
     </section>
 
-    <!-- 4. TRIPS (Oferta) -->
     <section id="trips" class="px-4 sm:px-6 py-16 bg-slate-50 border-t border-gray-100 fade-up">
         <div class="max-w-6xl mx-auto">
             <div class="flex items-end justify-between mb-8">
@@ -154,9 +133,7 @@
                     <p class="text-gray-500 text-sm">Wybierz jeden z naszych planów i przetestuj aplikację.</p>
                 </div>
             </div>
-
             <div id="tripsGrid" class="flex gap-4 overflow-x-auto pb-6 -mx-4 px-4 sm:mx-0 sm:px-0" style="scrollbar-width: none;">
-                <!-- Wałbrzych -->
                 <div onclick="showDetail('walbrzych')" class="cursor-pointer min-w-[280px] bg-white rounded-3xl p-6 border border-gray-100 shadow-sm hover:shadow-md hover:border-orange-200 transition-all">
                     <div class="h-32 bg-blue-50 rounded-2xl mb-4 flex items-center justify-center">
                         <i data-lucide="castle" class="w-10 h-10 text-blue-400"></i>
@@ -168,8 +145,6 @@
                         <span class="bg-gray-50 text-[10px] px-2 py-1 rounded-full font-medium">7h</span>
                     </div>
                 </div>
-
-                <!-- Świdnica -->
                 <div onclick="showDetail('swidnica')" class="cursor-pointer min-w-[280px] bg-white rounded-3xl p-6 border border-gray-100 shadow-sm hover:shadow-md hover:border-orange-200 transition-all">
                     <div class="h-32 bg-yellow-50 rounded-2xl mb-4 flex items-center justify-center">
                         <i data-lucide="landmark" class="w-10 h-10 text-yellow-500"></i>
@@ -185,10 +160,8 @@
         </div>
     </section>
 
-    <!-- 5. FINAL CTA -->
     <section class="px-4 sm:px-6 py-20 fade-up">
      <div class="max-w-4xl mx-auto text-center bg-orange-500 rounded-[2.5rem] p-10 sm:p-16 relative overflow-hidden shadow-2xl shadow-orange-500/20">
-      <!-- Dekoracyjne tło -->
       <div class="absolute inset-0 opacity-10">
        <svg width="100%" height="100%">
         <defs>
@@ -198,7 +171,6 @@
         </defs><rect width="100%" height="100%" fill="url(#dots)" />
        </svg>
       </div>
-      
       <div class="relative z-10">
        <h2 class="font-heading font-bold text-4xl sm:text-5xl text-white mb-6">I po prostu jedziesz.</h2>
        <p class="text-orange-100 text-lg mb-10 max-w-xl mx-auto">Wystarczy 30 sekund, by znaleźć wycieczkę idealną. Spróbuj i zobacz, jakie to łatwe.</p>
@@ -209,7 +181,6 @@
      </div>
     </section>
 
-    <!-- FOOTER -->
     <footer class="px-4 sm:px-6 py-8 border-t border-gray-100">
      <div class="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-gray-400">
       <div class="flex items-center gap-2">
@@ -225,11 +196,7 @@
      </div>
     </footer>
     
-   </div><!-- /landingPage --> 
-
-
-   <!-- TRIP DETAIL PAGE (Praktycznie bez zmian, po prostu działa!) -->
-   <div id="detailPage" class="hidden bg-gray-50 min-h-screen">
+   </div><div id="detailPage" class="hidden bg-gray-50 min-h-screen">
     <nav class="sticky top-0 z-50 backdrop-blur-md bg-white/80 border-b border-gray-100">
      <div class="max-w-4xl mx-auto px-4 sm:px-6 h-14 flex items-center gap-3">
          <button onclick="showLanding()" class="w-8 h-8 rounded-xl bg-gray-100 flex items-center justify-center hover:bg-gray-200 transition-colors"><i data-lucide="arrow-left" class="w-4 h-4"></i></button> 
@@ -238,61 +205,48 @@
     </nav>
     <div class="max-w-4xl mx-auto px-4 sm:px-6 py-6">
         
-     <!-- Map header -->
      <div id="map-container" class="rounded-2xl overflow-hidden mb-6 relative bg-slate-100" style="height: 350px;">
       <svg class="absolute inset-0 w-full h-full" viewBox="0 0 800 350" fill="none">
-            <!-- Główna linia trasy -->
-            <path d="M60,260 C180,150 350,250 500,180 S700,200 760,120" stroke="#2ECC71" stroke-width="4" fill="none" stroke-linecap="round" style="filter: drop-shadow(0px 4px 4px rgba(0,0,0,0.5));"/> 
+            <path id="map-path" d="M60,260 C180,150 350,250 500,180 S700,200 760,120" stroke="#2ECC71" stroke-width="4" fill="none" stroke-linecap="round" style="filter: drop-shadow(0px 4px 4px rgba(0,0,0,0.5));"/> 
 
-            <!-- Start: Wrocław Główny -->
-            <circle cx="60" cy="260" r="8" fill="#FF7A00" />
-            <circle cx="60" cy="260" r="4" fill="white" />
-            <text x="60" y="290" text-anchor="middle" font-size="11" fill="#FF7A00" paint-order="stroke" font-weight="700" font-family="DM Sans" style="filter: drop-shadow(0px 2px 4px rgba(0,0,0,0.8));">Wrocław Główny</text>
+            <circle id="start-dot" cx="60" cy="260" r="8" fill="#FF7A00" />
+            <circle id="start-dot-inner" cx="60" cy="260" r="4" fill="white" />
+            <text id="start-text" x="60" y="240" text-anchor="middle" font-size="11" fill="#FF7A00" paint-order="stroke" font-weight="700" font-family="DM Sans" style="filter: drop-shadow(0px 2px 4px rgba(0,0,0,0.8));">Wrocław Główny</text>
 
-            <!-- P1: Wałbrzych  -->
-            <circle id="dot-1" cx="170" cy="210" r="6" class="map-dot cursor-pointer fill-[#FB923C] hover:fill-yellow-400 hover:stroke-white transition-all hover:stroke-[3px] duration-300" data-info="Stacja docelowa Kolei Dolnośląskich. Ok. 1h 10min z Wrocławia."></circle> 
+            <circle id="dot-1" cx="170" cy="210" r="6" class="map-dot cursor-pointer fill-[#FB923C] hover:fill-yellow-400 hover:stroke-white transition-all hover:stroke-[3px] duration-300" data-info=""></circle> 
             <text id="map-point-1" x="170" y="190" text-anchor="middle" font-size="12" fill="#FF7A00" paint-order="stroke" font-weight="800" style="filter: drop-shadow(0px 2px 4px rgba(0,0,0,0.8));"></text>
 
-            <!-- P2: Zamek Książ  -->
-            <circle id="dot-2" cx="280" cy="206" r="6" class="map-dot cursor-pointer fill-[#FB923C] hover:fill-yellow-400 hover:stroke-white hover:stroke-[3px] transition-all duration-300" data-info="Największy zamek w Polsce."></circle>
+            <circle id="dot-2" cx="280" cy="206" r="6" class="map-dot cursor-pointer fill-[#FB923C] hover:fill-yellow-400 hover:stroke-white hover:stroke-[3px] transition-all duration-300" data-info=""></circle>
             <text id="map-point-2" x="280" y="230" text-anchor="middle" font-size="11.5" fill="#FF7A00" paint-order="stroke" font-weight="800" style="filter: drop-shadow(0px 2px 4px rgba(0,0,0,0.8));"></text>
             
-            <!-- P3: Palmiarnia  -->
-            <circle id="dot-3" cx="390" cy="205" r="6" class="map-dot cursor-pointer fill-[#FB923C] hover:fill-yellow-400 hover:stroke-white hover:stroke-[3px] transition-all duration-300" data-info="Egzotyczny ogród z ponad 200 gatunkami roślin i lemurami."></circle>
+            <circle id="dot-3" cx="390" cy="205" r="6" class="map-dot cursor-pointer fill-[#FB923C] hover:fill-yellow-400 hover:stroke-white hover:stroke-[3px] transition-all duration-300" data-info=""></circle>
             <text id="map-point-3" x="390" y="190" text-anchor="middle" font-size="11.5" fill="#FF7A00" paint-order="stroke" font-weight="800" style="filter: drop-shadow(0px 2px 4px rgba(0,0,0,0.8));"></text>
 
-            <!-- P4: Muzeum Porcelany  -->
-            <circle id="dot-4" cx="510" cy="175" r="6" class="map-dot cursor-pointer fill-[#FB923C] hover:fill-yellow-400 hover:stroke-white hover:stroke-[3px] transition-all duration-300" data-info="10 000 eksponatów. W poniedziałki wstęp jest bezpłatny!"></circle>
+            <circle id="dot-4" cx="510" cy="175" r="6" class="map-dot cursor-pointer fill-[#FB923C] hover:fill-yellow-400 hover:stroke-white hover:stroke-[3px] transition-all duration-300" data-info=""></circle>
             <text id="map-point-4" x="515" y="205" text-anchor="middle" font-size="11.5" fill="#FF7A00" paint-order="stroke" font-weight="800" style="filter: drop-shadow(0px 2px 4px rgba(0,0,0,0.8));"></text>
             
-            <!-- P5: Stara Kopalnia  -->
-            <circle id="dot-5" cx="630" cy="150" r="6" class="map-dot cursor-pointer fill-[#FB923C] hover:fill-yellow-400 hover:stroke-white hover:stroke-[3px] transition-all duration-300" data-info="Zwiedzanie z byłym górnikiem. Trasa podziemna i wieża widokowa."></circle>
+            <circle id="dot-5" cx="630" cy="150" r="6" class="map-dot cursor-pointer fill-[#FB923C] hover:fill-yellow-400 hover:stroke-white hover:stroke-[3px] transition-all duration-300" data-info=""></circle>
             <text id="map-point-5" x="630" y="170" text-anchor="middle" font-size="11.5" fill="#FF7A00" paint-order="stroke" font-weight="800" style="filter: drop-shadow(0px 2px 4px rgba(0,0,0,0.8));"></text>
             
-            <!-- P6: Wieża Widokowa  -->
-            <circle id="dot-6" cx="710" cy="155" r="6" class="map-dot cursor-pointer fill-[#FB923C] hover:fill-yellow-400 hover:stroke-white hover:stroke-[3px] transition-all duration-300" data-info="Nowość 2024! Panorama 360 stopni na Wałbrzych i Sudety."></circle>
+            <circle id="dot-6" cx="710" cy="155" r="6" class="map-dot cursor-pointer fill-[#FB923C] hover:fill-yellow-400 hover:stroke-white hover:stroke-[3px] transition-all duration-300" data-info=""></circle>
             <text id="map-point-6" x="715" y="185" text-anchor="middle" font-size="12" fill="#FF7A00" paint-order="stroke" font-weight="800" style="filter: drop-shadow(0px 2px 4px rgba(0,0,0,0.8));"></text>
 
-            <!-- P7: Powrót  -->
             <circle cx="760" cy="120" r="8" fill="#FF7A00" />
             <circle cx="760" cy="120" r="4" fill="white" />
             <text id="map-point-7" x="795" y="100" text-anchor="end" font-size="10" fill="#FF7A00" paint-order="stroke" font-weight="700"></text>
        </svg>
 
-       <!-- Dynamiczny Tooltip -->
        <div id="map-tooltip" class="fixed hidden bg-slate-800 text-white text-[11px] px-3 py-2 rounded-lg shadow-xl z-[100] pointer-events-none max-w-[200px] leading-snug border border-slate-600"></div>
      </div>
 
-     <!-- Title & rating -->
-     <h1 class="font-heading font-bold text-2xl sm:text-3xl mb-2">Wałbrzych</h1>
-     <div class="flex items-center gap-3 flex-wrap hidden">
-       <div class="flex items-center gap-0.5" id="starsContainer"></div><span class="text-sm text-gray-500">4.7 (128 opinii)</span> <span class="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-medium">Popularna</span>
+     <h1 class="font-heading font-bold text-2xl sm:text-3xl mb-2">Miasto</h1>
+     <div class="flex items-center gap-3 flex-wrap h-6">
+       <div class="flex items-center gap-0.5 text-gray-400 text-xs font-medium"><i data-lucide="map-pin" class="w-3 h-3"></i> Trasa</div>
      </div>
      
-     <!-- Quick stats -->
      <div class="grid grid-cols-3 gap-3 mb-8">
       <div class="bg-white rounded-2xl border border-gray-100 p-4 text-center">
-       <div class="text-2xl font-bold text-orange-500 font-heading">0 zł</div>
+       <div class="text-2xl font-bold text-orange-500 font-heading trip-price-val">0 zł</div>
        <div class="text-xs text-gray-400 mt-1">budżet</div>
       </div>
       <div class="bg-white rounded-2xl border border-gray-100 p-4 text-center">
@@ -301,32 +255,31 @@
       </div>
       <div class="bg-white rounded-2xl border border-gray-100 p-4 text-center">
         <div class="flex justify-center mb-1"><i data-lucide="train" class="w-5 h-5 text-blue-500"></i></div>
-        <div class="text-xs text-gray-400 trip-transport-val">transport</div>
+        <div class="text-xs text-gray-400 mt-1 trip-transport-val">transport</div>
       </div>
      </div>
 
-     <!-- Timeline -->
      <div class="mb-8">
       <h2 class="font-heading font-bold text-xl mb-4">Jak wygląda ten dzień?</h2>
       <div class="space-y-0" id="timeline"></div>
      </div>
      
-     <!-- Attractions -->
      <div class="mb-8">
       <h2 class="font-heading font-bold text-xl mb-4">Co zobaczysz na miejscu?</h2>
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-4" id="attractions"></div>
      </div>
      
-     <!-- Budget Breakdown -->
      <div class="mb-8">
       <h2 class="font-heading font-bold text-xl mb-4">Ile to będzie kosztować?</h2>
       <div class="bg-white rounded-2xl border border-gray-100 p-5">
        <div class="space-y-3" id="budgetList"></div>
-       <div class="border-t border-gray-100 mt-4 pt-4 flex justify-between font-bold"><span>Łącznie</span><span class="text-orange-500 text-lg"></span></div>
+       <div class="border-t border-gray-100 mt-4 pt-4 flex justify-between font-bold">
+        <span>Łącznie</span>
+        <span class="text-orange-500 text-lg trip-total-budget"></span>
       </div>
      </div>
+     </div>
      
-     <!-- Practical Info -->
      <div class="mb-8">
       <h2 class="font-heading font-bold text-xl mb-4">Praktyczne informacje</h2>
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-3" id="practicalInfo"></div>
@@ -334,18 +287,14 @@
      
     </div>
 
-    <!-- Bottom CTA -->
     <div class="sticky bottom-4 z-40 flex justify-center px-4">
-        <button class="w-auto px-8 py-4 bg-orange-500 text-white font-bold rounded-2xl hover:bg-orange-600 transition-all shadow-xl shadow-orange-500/30 flex items-center justify-center gap-2 text-sm">
+        <button onclick="downloadTripPDF()" class="w-auto px-8 py-4 bg-orange-500 text-white font-bold rounded-2xl hover:bg-orange-600 transition-all shadow-xl shadow-orange-500/30 flex items-center justify-center gap-2 text-sm">
              <i data-lucide="navigation" class="w-4 h-4"></i> Zaplanuj tę wycieczkę 
         </button>
     </div>
     <div class="h-8"></div>
     
-   </div><!-- /detailPage -->
-  </div><!-- /appRoot -->
-
-  <script src="js/data.js"></script>
+   </div></div><script src="js/data.js"></script>
   <script src="js/navigation.js"></script>
   <script src="js/render.js"></script>
   <script src="js/sdk.js"></script>

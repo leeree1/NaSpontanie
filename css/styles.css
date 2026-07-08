@@ -1,19 +1,111 @@
-html, body { height: 100%; margin: 0; }
-* { box-sizing: border-box; }
-.app-root { height: 100%; overflow-y: auto; overflow-x: hidden; }
-.chip { transition: all 0.2s ease; }
-.chip:hover, .chip.active { transform: scale(1.05); }
-.trip-card { transition: transform 0.25s ease, box-shadow 0.25s ease; }
-.trip-card:hover { transform: translateY(-4px); box-shadow: 0 12px 32px rgba(0,0,0,0.1); }
-.heart-btn { transition: transform 0.2s ease; }
-.heart-btn:hover { transform: scale(1.2); }
-.fade-up { opacity: 0; transform: translateY(24px); transition: opacity 0.6s ease, transform 0.6s ease; }
-.fade-up.visible { opacity: 1; transform: translateY(0); }
-.pin-bounce { animation: pinBounce 2s ease-in-out infinite; }
-@keyframes pinBounce { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
-.scroll-container { scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; }
-.scroll-container > * { scroll-snap-align: start; }
-.timeline-dot { width: 14px; height: 14px; border-radius: 50%; flex-shrink: 0; }
-.star-filled { color: #FACC15; }
-.star-empty { color: #D1D5DB; }
-body { box-sizing: border-box; }
+/* ==========================================================================
+   STYLE GŁÓWNE APLIKACJI (WIDOK NA STRONIE)
+   ========================================================================== */
+
+:root {
+    --font-heading: 'Fraunces', serif;
+    --font-body: 'DM Sans', sans-serif;
+    --color-primary: #3B82F6; /* Niebieski */
+    --color-secondary: #FF7A00; /* Pomarańczowy startowy */
+    --color-dark: #1E293B;
+}
+
+/* Podstawowe płynne przejścia dla aplikacji */
+.fade-up {
+    animation: fadeUp 0.5s ease-out forwards;
+}
+
+@keyframes fadeUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Ukrywanie podstron */
+.hidden {
+    display: none !important;
+}
+
+/* Style dla niestandardowego tooltipa na mapie */
+#map-tooltip {
+    transition: opacity 0.15s ease-in-out;
+    font-family: var(--font-body), sans-serif;
+}
+
+/* Przypisanie fontów do klas projektowych */
+.font-heading {
+    font-family: var(--font-heading), serif;
+}
+
+body {
+    font-family: var(--font-body), sans-serif;
+    color: var(--color-dark);
+}
+
+
+/* ==========================================================================
+   STYLE PRZEZNACZONE WYŁĄCZNIE DO GENEROWANIA PDF / WYDRUKU
+   ========================================================================== */
+
+@media print {
+    /* 1. Ukrywamy elementy interfejsu, których podróżnik nie potrzebuje w pliku PDF */
+    nav, 
+    button, 
+    .sticky,
+    #landingPage,
+    .w-8.h-8.rounded-xl.bg-gray-100 { /* Ukrywa przycisk "wstecz" na górze */
+        display: none !important;
+    }
+
+    /* 2. Konfiguracja rozmiaru strony i reset marginesów */
+    @page {
+        size: A4;
+        margin: 12mm 15mm 12mm 15mm; /* Optymalne marginesy pod jedną stronę */
+    }
+
+    body, #detailPage {
+        background: white !important;
+        color: black !important;
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+
+    /* 3. Zmniejszamy marginesy sekcji, żeby wszystko idealnie zmieściło się na 1 stronie */
+    .mb-8 {
+        margin-bottom: 1.2rem !important;
+    }
+    
+    .mb-6 {
+        margin-bottom: 1rem !important;
+    }
+
+    /* 4. BLOKADY ŁAMANIA SEKCJI (Zabezpieczenie przed ucinaniem i urwanymi napisami) */
+    #timeline {
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+    }
+
+    #map-container,
+    #attractions,
+    #budgetList,
+    #practicalInfo {
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+    }
+
+    /* 5. Wymuszamy drukowanie kolorów tła, obrazka panoramy oraz linii SVG */
+    * {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+
+    #map-container {
+        border: 1px solid #e2e8f0 !important; /* Estetyczna ramka wokół mapy w PDF */
+        border-radius: 1rem !important;
+    }
+}

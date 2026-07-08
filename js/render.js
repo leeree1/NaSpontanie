@@ -95,7 +95,6 @@ function renderDetail(trip) {
     }
 
     // 5. PONOWNE UTWORZENIE IKON LUCIDE
-    // Ponieważ dodaliśmy nowe elementy do drzewa DOM w locie, musimy odświeżyć ikony Lucide
     if (typeof lucide !== 'undefined') {
         lucide.createIcons();
     }

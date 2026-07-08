@@ -5,8 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>NaSpontanie</title>
   <script src="https://cdn.tailwindcss.com/3.4.17"></script>
-  <script src="https://cdn.jsdelivr.net/npm/lucide@0.263.0/dist/umd/lucide.min.js"></script>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/lucide@0.263.0/dist/umd/lucide.min.js" defer></script>  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/styles.css">
   <script src="js/config.js"></script>
  </head>
@@ -18,14 +17,13 @@
     <nav class="sticky top-0 z-50 backdrop-blur-md bg-white/80 border-b border-gray-100" style="font-family: var(--font-body, 'DM Sans', sans-serif);">
      <div class="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
          <a href="#" class="flex items-center gap-2 group" onclick="event.preventDefault(); showLanding();">
-            <div class="w-8 h-8 bg-orange-500 rounded-xl flex items-center justify-center"><i data-lucide="compass" class="w-4 h-4 text-white"></i></div>
+            <img src="logo.png" alt="NaSpontanie Logo" class="h-9 w-auto object-contain">
             <span class="font-heading font-bold text-lg tracking-tight text-dark">NaSpontanie</span> 
          </a>
       <div class="hidden sm:flex items-center gap-6 text-sm font-medium text-gray-500">
           <a href="#how" class="hover:text-orange-500 transition-colors">Jak to działa</a> 
           <a href="#trips" class="hover:text-orange-500 transition-colors">Odkryj</a>
       </div>
-      <button class="text-sm font-medium text-orange-500 border border-orange-500/20 px-4 py-2 rounded-xl hover:bg-orange-500 hover:text-white transition-all">Zaloguj się</button>
      </div>
     </nav>
 
@@ -184,8 +182,7 @@
     <footer class="px-4 sm:px-6 py-8 border-t border-gray-100">
      <div class="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-gray-400">
       <div class="flex items-center gap-2">
-       <div class="w-5 h-5 bg-orange-500 rounded-lg flex items-center justify-center">
-        <i data-lucide="compass" class="w-3 h-3 text-white"></i>
+        <img src="logo.png" alt="NaSpontanie Logo" class="h-9 w-auto object-contain">
        </div> NaSpontanie © 2025
       </div>
       <div class="flex gap-4">
@@ -294,9 +291,18 @@
     </div>
     <div class="h-8"></div>
     
-   </div></div><script src="js/data.js"></script>
+<script src="js/data.js"></script>
   <script src="js/navigation.js"></script>
   <script src="js/render.js"></script>
   <script src="js/sdk.js"></script>
+
+  <!-- WYMUSZANIE RYSOREWANIA IKON OD RAZU PO URUCHOMIENIU STRONY -->
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      if (typeof lucide !== 'undefined') {
+        lucide.createIcons();
+      }
+    });
+  </script>
  </body>
 </html>

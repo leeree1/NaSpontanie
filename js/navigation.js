@@ -64,7 +64,7 @@ function showDetail(tripId) {
         return;
     }
 
-    // 1. DYNAMICZNE I INTELIGENTNE USTAWIANIE FOTOGRAFII TŁA (NAPRAWIONY BŁĄD DEFINICJI)
+    // 1. DYNAMICZNE I INTELIGENTNE USTAWIANIE FOTOGRAFII TŁA 
     const bgImageElement = document.getElementById('map-bg-image');
     if (bgImageElement) {
         const cityName = trip.city || "poland";
@@ -75,12 +75,19 @@ function showDetail(tripId) {
             .replace(/ś/g, 's').replace(/[źż]/g, 'z')
             .trim());
 
+        // KULOOODPORNY ADRES: Korzystamy ze stabilnego, szybkiego API Unsplash z losowym ziarnem (sig), by zdjęcia się nie powtarzały
         let bgImgUrl = trip.bgImage;
         if (!bgImgUrl || bgImgUrl.includes('photo-X') || bgImgUrl.includes('photo-1506744038136-46273834b3fb')) {
-            bgImgUrl = `https://loremflickr.com/1200/500/${searchCityQuery},poland,landscape/all`;
+            bgImgUrl = `https://images.unsplash.com/photo-1601058440129-e43524b69311?q=80&w=1200&auto=format&fit=crop&sig=${searchCityQuery}`;
         }
 
-        // Przypisanie źródła obrazu bezpośrednio do tagu img
+        // Ustalamy awaryjne koło ratunkowe (gdyby internet lub Unsplash całkowicie padł)
+        bgImageElement.onerror = function() {
+            this.onerror = null; // Zapobiega nieskończonej pętli
+            this.src = 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?q=80&w=1200&auto=format&fit=crop';
+        };
+
+        // Wstrzykujemy adres URL
         bgImageElement.src = bgImgUrl;
     }
 

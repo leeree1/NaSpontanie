@@ -1,3 +1,4 @@
+// js/navigation.js
 
 // POWRÓT NA STRONĘ GŁÓWNĄ (LANDING PAGE)
 function showLanding() {
@@ -23,11 +24,9 @@ async function generateAiTrip() {
     const placeholder = document.getElementById('creator-placeholder');
     const loader = document.getElementById('creator-loader');
 
-    // 1. Włączenie ekranu ładowania (Loader)
     if (placeholder) placeholder.classList.add('hidden');
     if (loader) loader.classList.remove('hidden');
 
-    // 2. Pobranie aktualnie wybranych wartości z filtrów
     const climate = document.getElementById('filter-climate').value;
     const budget = document.getElementById('filter-budget').value;
     const duration = document.getElementById('filter-duration').value;
@@ -35,7 +34,6 @@ async function generateAiTrip() {
     const difficulty = document.querySelector('input[name="difficulty"]:checked').value;
 
     try {
-        // 3. Wysłanie filtrów do naszej funkcji serwerowej na Vercelu
         const response = await fetch('/api/generate-trip', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -46,7 +44,6 @@ async function generateAiTrip() {
 
         const generatedTrip = await response.json();
 
-        // 4. Wstrzyknięcie dynamicznych danych do pamięci aplikacji i otwarcie podglądu
         tripsData[generatedTrip.id] = generatedTrip; 
         showDetail(generatedTrip.id);
 
@@ -54,8 +51,7 @@ async function generateAiTrip() {
         console.error("Agent Gemini napotkał problem:", error);
         alert("Wystąpił problem z połączeniem z Agentem AI. Spróbuj ponownie!");
     } finally {
-        // 5. Przywrócenie pierwotnego stanu filtrów po zakończeniu ładowania
-        if (placeholder) placeholder.classList.remove('hidden');
+        if (placeholder) placeholder.remove('hidden');
         if (loader) loader.classList.add('hidden');
     }
 }
@@ -68,36 +64,25 @@ function showDetail(tripId) {
         return;
     }
 
-    // 1. DYNAMICZNE I INTELIGENTNE USTAWIANIE ZDJĘCIA W TLE MAPY (ZABEZPIECZONE PRZED 404)
-const mapContainer = document.getElementById('map-container');
-if (mapContainer) {
-    const cityName = trip.city || "poland";
-    
-    // Oczyszczamy frazę z polskich znaków do wyszukiwarki
-    const searchCityQuery = encodeURIComponent(cityName.toLowerCase()
-        .replace(/ł/g, 'l').replace(/[ąά]/g, 'a').replace(/ę/g, 'e')
-        .replace(/ć/g, 'c').replace(/ń/g, 'n').replace(/ó/g, 'o')
-        .replace(/ś/g, 's').replace(/[źż]/g, 'z')
-        .trim());
+    // 1. DYNAMICZNE I INTELIGENTNE USTAWIANIE FOTOGRAFII TŁA (NAPRAWIONY BŁĄD DEFINICJI)
+    const bgImageElement = document.getElementById('map-bg-image');
+    if (bgImageElement) {
+        const cityName = trip.city || "poland";
+        
+        const searchCityQuery = encodeURIComponent(cityName.toLowerCase()
+            .replace(/ł/g, 'l').replace(/[ąά]/g, 'a').replace(/ę/g, 'e')
+            .replace(/ć/g, 'c').replace(/ń/g, 'n').replace(/ó/g, 'o')
+            .replace(/ś/g, 's').replace(/[źż]/g, 'z')
+            .trim());
 
-    // NOWE, NIEZAWODNE ROZWIĄZANIE:
-    // Jeśli link od Gemini jest generyczny lub pusty, używamy szybkiego i darmowego API LoremFlickr,
-    // które natychmiastowo i bez błędów dopasowuje piękne, panoramiczne zdjęcia krajobrazowe z Polski
-    let bgImgUrl = trip.bgImage;
-    if (!bgImgUrl || bgImgUrl.includes('photo-X') || bgImgUrl.includes('photo-1506744038136-46273834b3fb')) {
-        bgImgUrl = `https://loremflickr.com/1200/500/${searchCityQuery},poland,landscape/all`;
+        let bgImgUrl = trip.bgImage;
+        if (!bgImgUrl || bgImgUrl.includes('photo-X') || bgImgUrl.includes('photo-1506744038136-46273834b3fb')) {
+            bgImgUrl = `https://loremflickr.com/1200/500/${searchCityQuery},poland,landscape/all`;
+        }
+
+        // Przypisanie źródła obrazu bezpośrednio do tagu img
+        bgImageElement.src = bgImgUrl;
     }
-
-    bgImageElement.src = bgImgUrl;
-
-
-    // Wstrzyknięcie tła i wymuszenie stylów widoczności
-    mapContainer.style.backgroundImage = `url('${bgImgUrl}')`;
-    mapContainer.style.backgroundSize = 'cover';
-    mapContainer.style.backgroundPosition = 'center';
-    mapContainer.style.backgroundRepeat = 'no-repeat';
-}
-
 
     // 2. WYRESETOWANIE I UKRYCIE WSZYSTKICH 6 KROPEK NA SZABLONIE MAPY
     for (let i = 1; i <= 6; i++) {
@@ -107,7 +92,7 @@ if (mapContainer) {
         if (dotEl) dotEl.style.display = "none";
     }
 
-    // 3. USTAWIENIE PUNKTU STARTOWEGO (WROCŁAW GŁÓWNY) NA SZTYWNO NA POCZĄTKU OSI
+    // 3. USTAWIENIE PUNKTU STARTOWEGO ZGODNIE Z WYBRANYM FILTREM
     const startDot = document.getElementById('start-dot');
     const startDotInner = document.getElementById('start-dot-inner');
     const startText = document.getElementById('start-text');
@@ -116,13 +101,8 @@ if (mapContainer) {
         startText.setAttribute('x', 60); 
         startText.setAttribute('y', 180);
         
-        // POBIERAMY DYNAMICZNIE NAZWĘ: 
-        // Jeśli AI zwróciło w obiekcie "startLocation", bierzemy ją. 
-        // Jeśli nie, wyciągamy tekst bezpośrednio z wybranego filtra transportu!
         const transportSelect = document.getElementById('filter-transport');
         const selectedFilterText = transportSelect.options[transportSelect.selectedIndex].text;
-        
-        // Wyciągamy człon po słowie "ze " (np. z "Pociąg ze Świdnicy" wyciągnie "Świdnica")
         const fallbackStart = selectedFilterText.includes(" ze ") ? selectedFilterText.split(" ze ")[1] : "Wrocław";
 
         startText.textContent = trip.startLocation || fallbackStart;
@@ -132,33 +112,26 @@ if (mapContainer) {
     if (startDot) startDot.setAttribute('cy', 200);
     if (startDotInner) startDotInner.setAttribute('cx', 60);
     if (startDotInner) startDotInner.setAttribute('cy', 200);
-    if (startText) {
-        startText.setAttribute('x', 60); 
-        startText.setAttribute('y', 180); 
-    }
 
     // 4. GENEROWANIE KRZYWEJ ŚCIEŻKI SVG NA PODSTAWIE KOORDYNATÓW OD GEMINI
-    let pathD = "M 60 200"; // Start trasy w punkcie Wrocławia (60, 200)
+    let pathD = "M 60 200"; 
 
     if (trip.mapLabels && trip.mapLabels.length > 0) {
         trip.mapLabels.forEach((label, index) => {
             const pointElement = document.getElementById(`map-point-${index + 1}`);
             const dotElement = document.getElementById(`dot-${index + 1}`);
 
-            // Jeśli element istnieje w strukturze HTML, aktywujemy go i pozycjonujemy
             if (dotElement && pointElement) {
                 dotElement.style.display = "block";
                 dotElement.setAttribute('cx', label.cx);
                 dotElement.setAttribute('cy', label.cy);
                 
-                // Ustawianie napisu nad wyznaczoną kropką
                 pointElement.textContent = label.text || label.label;
                 pointElement.setAttribute('x', label.cx);
                 pointElement.setAttribute('y', label.cy - 16); 
                 
                 if (label.info) dotElement.setAttribute('data-info', label.info);
 
-                // Matematyczne wyliczanie gładkich łuków (Cubic Bezier) pomiędzy punktami
                 const prevX = index === 0 ? 60 : trip.mapLabels[index - 1].cx;
                 const prevY = index === 0 ? 200 : trip.mapLabels[index - 1].cy;
                 const cpX1 = prevX + (label.cx - prevX) / 2;
@@ -169,7 +142,6 @@ if (mapContainer) {
         });
     }
 
-    // Wstrzyknięcie gotowego kodu rysującego gładką linię szlaku
     const mapPathElement = document.getElementById('map-path');
     if (mapPathElement) {
         mapPathElement.setAttribute('d', pathD);
@@ -181,12 +153,10 @@ if (mapContainer) {
     budgetItems = trip.budget;
     practicalData = trip.practical;
 
-    // Podstawienie nagłówków tekstowych podstrony
     document.querySelector('#detailPage h1').innerText = trip.city;
     document.querySelector('#detailPage .text-gray-400').innerHTML = 
         `<i data-lucide="map-pin" class="w-3 h-3"></i> ${trip.distance}`;
     
-    // Wstrzykiwanie statystyk głównych kafelków
     const priceEl = document.querySelector('#detailPage .trip-price-val');
     const durationEl = document.querySelector('#detailPage .trip-duration-val');
     const transportEl = document.querySelector('#detailPage .trip-transport-val');
@@ -228,7 +198,6 @@ document.addEventListener('mouseout', (e) => {
     }
 });
 
-// DRUKOWANIE / EKSPORT DO STRUKTURY PDF
 function downloadTripPDF() {
     window.print();
 }

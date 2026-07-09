@@ -88,6 +88,9 @@ if (mapContainer) {
         bgImgUrl = `https://loremflickr.com/1200/500/${searchCityQuery},poland,landscape/all`;
     }
 
+    bgImageElement.src = bgImgUrl;
+
+
     // Wstrzyknięcie tła i wymuszenie stylów widoczności
     mapContainer.style.backgroundImage = `url('${bgImgUrl}')`;
     mapContainer.style.backgroundSize = 'cover';

@@ -71,8 +71,7 @@ function renderAttractions(attractionsData) {
         // Sprawdzamy czy Gemini przekazało gotowy, poprawny link. Jeśli zawiera generyczne "photo-Y" lub "photo-X", podstawiamy nasz dynamiczny link tematyczny
         let currentImg = attraction.image;
         if (!currentImg || currentImg.includes('photo-Y') || currentImg.includes('photo-X') || currentImg.includes('photo-1488646953014-85cb44e25828')) {
-            // Używamy oficjalnej metody wyszukiwania tematycznego Unsplash za pomocą słów kluczowych
-            currentImg = `https://source.unsplash.com/featured/400x300/?${searchQuery},poland,nature`;
+              currentImg = `https://images.unsplash.com/photo-1601058440129-e43524b69311?q=80&w=400&auto=format&fit=crop`;
         }
 
         card.innerHTML = `

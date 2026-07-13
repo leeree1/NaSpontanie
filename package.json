@@ -3,9 +3,7 @@
   "version": "1.0.0",
   "description": "Generator spontanicznych wycieczek",
   "main": "index.html",
-  "dependencies": {
-    "openai": "^4.0.0"
-  },
+  "dependencies": {},
   "engines": {
     "node": "24.x"
   }

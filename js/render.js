@@ -70,9 +70,9 @@ function renderAttractions(attractionsData) {
         
         // Sprawdzamy czy Gemini przekazało gotowy, poprawny link. Jeśli zawiera generyczne "photo-Y" lub "photo-X", podstawiamy nasz dynamiczny link tematyczny
         let currentImg = attraction.image;
-        if (!currentImg || currentImg.includes('photo-Y') || currentImg.includes('photo-X') || currentImg.includes('photo-1488646953014-85cb44e25828')) {
-              currentImg = `https://images.unsplash.com/photo-1601058440129-e43524b69311?q=80&w=400&auto=format&fit=crop`;
-        }
+        if (!currentImg || currentImg.includes('photo-Y') || currentImg.includes('photo-X')) {
+            currentImg = `https://images.unsplash.com/photo-1601058440129-e43524b69311?q=80&w=400&auto=format&fit=crop`;
+}
 
         card.innerHTML = `
             <div class="h-48 bg-gray-100 relative overflow-hidden">

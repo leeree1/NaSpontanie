@@ -10,40 +10,73 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  final LocationService _locationService = LocationService();
   Position? _currentPosition;
   bool _isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    _determinePosition();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _askAndLoad();
+    });
   }
 
-  Future<void> _determinePosition() async {
-    try {
-      Position position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high,
-      );
-      setState(() {
-        _currentPosition = position;
-        _isLoading = false;
-      });
-    } catch (e) {
-      setState(() {
-        _currentPosition = Position(
-          latitude: 51.1079,
-          longitude: 17.0385,
-          timestamp: DateTime.now(),
-          accuracy: 1.0,
-          altitude: 0.0,
-          altitudeAccuracy: 0.0,
-          heading: 0.0,
-          headingAccuracy: 0.0,
-          speed: 0.0,
-          speedAccuracy: 0.0,
+  Future<void> _askAndLoad() async {
+    final ok = await showDialog<bool>(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Lokalizacja'),
+          content: const Text(
+            'Potrzebujemy Twojej lokalizacji, żeby liczyć odległość do miejsc. Zgadzasz się?',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: const Text('Nie'),
+            ),
+            TextButton(
+              onPressed: () => Navigator.pop(context, true),
+              child: const Text('Tak'),
+            ),
+          ],
         );
+      },
+    );
+
+    if (ok != true) {
+      setState(() {
         _isLoading = false;
       });
+      return;
+    }
+
+    final position = await _locationService.getMyPosition();
+    setState(() {
+      _currentPosition = position;
+      _isLoading = false;
+    });
+
+    if (!mounted) {
+      return;
+    }
+
+    if (position != null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Twoja lokalizacja: ${position.latitude.toStringAsFixed(4)}, ${position.longitude.toStringAsFixed(4)}',
+          ),
+        ),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Brak zgody na lokalizację albo GPS jest wyłączony.'),
+        ),
+      );
     }
   }
 
@@ -63,7 +96,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: Text(
                     _currentPosition != null
                         ? 'Twoja lokalizacja:\nSzerokość: ${_currentPosition!.latitude.toStringAsFixed(4)}\nDługość: ${_currentPosition!.longitude.toStringAsFixed(4)}'
-                        : 'Brak danych o lokalizacji',
+                        : 'Brak lokalizacji. Włącz GPS i daj zgodę w telefonie.',
                     style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
                     textAlign: TextAlign.center,
                   ),
@@ -71,7 +104,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 // Lista punktów z bazy
                 Expanded(
                   child: FutureBuilder(
-                    future: LocationService().getLocations(),
+                    future: _locationService.getLocations(),
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
                         return const Center(child: CircularProgressIndicator());
@@ -86,10 +119,12 @@ class _HomeScreenState extends State<HomeScreen> {
                         itemCount: locations.length,
                         itemBuilder: (context, index) {
                           final loc = locations[index];
-                          
+
                           double lat = (loc['latitude'] as num?)?.toDouble() ?? 0.0;
-                          double lon = (loc['longtitude'] as num?)?.toDouble() ?? 0.0;
-                          
+                          double lon = (loc['longitude'] as num?)?.toDouble() ??
+                              (loc['longtitude'] as num?)?.toDouble() ??
+                              0.0;
+
                           double distance = 0.0;
                           if (_currentPosition != null) {
                             distance = Geolocator.distanceBetween(
@@ -100,8 +135,8 @@ class _HomeScreenState extends State<HomeScreen> {
                             );
                           }
 
-                          String distanceText = distance >= 1000 
-                              ? '${(distance / 1000).toStringAsFixed(1)} km' 
+                          String distanceText = distance >= 1000
+                              ? '${(distance / 1000).toStringAsFixed(1)} km'
                               : '${distance.toInt()} m';
 
                           double radius = (loc['radius'] as num?)?.toDouble() ?? 100.0;

@@ -5,7 +5,7 @@ import 'screens/main_screen.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Inicjalizacja Supabase (tutaj wkleimy Twoje klucze z projektu)
+  // Inicjalizacja Supabase dla projektu NaSpontanie
   await Supabase.initialize(
     url: 'https://osdyyrltmasukfnilhzy.supabase.co',
     anonKey: 'sb_publishable_Q0-PukTY3_JXl5NqP26EFw_zlHrviEB',

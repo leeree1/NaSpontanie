@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'trip_flow_screens.dart'; // Importujemy plik z nowymi ekranami
 
 class TripsScreen extends StatefulWidget {
   const TripsScreen({Key? key}) : super(key: key);
@@ -12,9 +13,15 @@ class _TripsScreenState extends State<TripsScreen> {
   String _selectedTransport = 'Pieszo';
   double _budget = 50.0;
   double _hours = 4.0;
-  final TextEditingController _startLocationController = TextEditingController(text: 'Wrocław, Rynek');
+  final TextEditingController _startLocationController =
+      TextEditingController(text: 'Wrocław, Rynek');
 
-  final List<String> _transportOptions = ['Pieszo', 'Rower', 'Komunikacja miejska', 'Samochód'];
+  final List<String> _transportOptions = [
+    'Pieszo',
+    'Rower',
+    'Komunikacja miejska',
+    'Samochód'
+  ];
 
   @override
   void dispose() {
@@ -23,26 +30,18 @@ class _TripsScreenState extends State<TripsScreen> {
   }
 
   void _generatePlan() {
-    // Prawidłowe wywołanie okna dialogowego z parametrem 'builder'
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Wygenerowany plan'),
-          content: Text(
-            'Start: ${_startLocationController.text}\n'
-            'Czas: ${_hours.toInt()}h\n'
-            'Budżet: ${_budget.toInt()} PLN\n'
-            'Transport: $_selectedTransport',
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text('OK'),
-            ),
-          ],
-        );
-      },
+    // Przechodzimy bezpośrednio do ekranu ładowania trasy,
+    // przekazując dane wpisane przez użytkownika w formularzu!
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => GeneratingTripScreen(
+          startLocation: _startLocationController.text,
+          hours: _hours,
+          budget: _budget,
+          transport: _selectedTransport,
+        ),
+      ),
     );
   }
 
@@ -59,7 +58,7 @@ class _TripsScreenState extends State<TripsScreen> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             const Text(
-              'Zaplanuj swoją przygodę',
+              'Zaplanuj swoją mikro-przygodę',
               style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
@@ -75,7 +74,8 @@ class _TripsScreenState extends State<TripsScreen> {
               decoration: InputDecoration(
                 labelText: 'Miejsce startu',
                 prefixIcon: const Icon(Icons.location_on, color: Colors.green),
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12)),
               ),
             ),
             const SizedBox(height: 20),
@@ -83,7 +83,8 @@ class _TripsScreenState extends State<TripsScreen> {
             // Dostępny czas (godziny)
             Text(
               'Dostępny czas: ${_hours.toStringAsFixed(0)} h',
-              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              style:
+                  const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
             Slider(
               value: _hours,
@@ -103,7 +104,8 @@ class _TripsScreenState extends State<TripsScreen> {
             // Budżet (PLN)
             Text(
               'Budżet: ${_budget.toStringAsFixed(0)} PLN',
-              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              style:
+                  const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
             Slider(
               value: _budget,
@@ -153,8 +155,10 @@ class _TripsScreenState extends State<TripsScreen> {
                 padding: const EdgeInsets.symmetric(vertical: 16),
                 backgroundColor: Colors.green[700],
                 foregroundColor: Colors.white,
-                textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                textStyle: const TextStyle(
+                    fontSize: 16, fontWeight: FontWeight.bold),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12)),
               ),
             ),
           ],

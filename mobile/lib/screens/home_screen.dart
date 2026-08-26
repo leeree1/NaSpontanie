@@ -2,15 +2,70 @@ import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'mission_screen.dart';
 
-class HomeScreen extends StatelessWidget {
-  const HomeScreen({Key? key}) : super(key: key);
+class HomeScreen extends StatefulWidget {
+  const HomeScreen({super.key});
 
-  // Funkcja pobierająca miejsca z tabeli 'locations' w Supabase
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  bool showMuseums = false;
+
+  Widget _categoryButton({
+    required String label,
+    required IconData icon,
+    required bool selected,
+    required VoidCallback onTap,
+  }) {
+    return Material(
+      color: selected ? Colors.white : Colors.transparent,
+      elevation: selected ? 1.5 : 0,
+      borderRadius: BorderRadius.circular(6),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(6),
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 10),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                icon,
+                size: 19,
+                color: selected ? Colors.green[700] : Colors.grey[600],
+              ),
+              const SizedBox(width: 6),
+              Text(
+                label,
+                style: TextStyle(
+                  color: selected ? Colors.green[700] : Colors.grey[700],
+                  fontWeight: selected ? FontWeight.w600 : FontWeight.normal,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   Future<List<Map<String, dynamic>>> _fetchLocations() async {
     final response = await Supabase.instance.client
-        .from('locations') // Nazwa tabeli w Twojej bazie Supabase
+        .from('locations')
         .select()
         .order('id');
+
+    return List<Map<String, dynamic>>.from(response);
+  }
+
+  Future<List<Map<String, dynamic>>> _fetchMuseums() async {
+    final response = await Supabase.instance.client
+        .from('museums_import')
+        .select()
+        .not('latitude', 'is', null)
+        .not('longtitude', 'is', null)
+        .order('title');
 
     return List<Map<String, dynamic>>.from(response);
   }
@@ -35,11 +90,42 @@ class HomeScreen extends StatelessWidget {
               style: TextStyle(color: Colors.black87, fontSize: 13),
             ),
           ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(12, 8, 12, 4),
+            child: Row(
+              children: [
+                Expanded(
+                  child: _categoryButton(
+                    label: 'Miejsca',
+                    icon: Icons.place_outlined,
+                    selected: !showMuseums,
+                    onTap: () {
+                      setState(() {
+                        showMuseums = false;
+                      });
+                    },
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: _categoryButton(
+                    label: 'Muzea',
+                    icon: Icons.museum_outlined,
+                    selected: showMuseums,
+                    onTap: () {
+                      setState(() {
+                        showMuseums = true;
+                      });
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ),
 
-          // Pobieranie danych z tabeli 'locations' w Supabase
           Expanded(
             child: FutureBuilder<List<Map<String, dynamic>>>(
-              future: _fetchLocations(),
+              future: showMuseums ? _fetchMuseums() : _fetchLocations(),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Center(child: CircularProgressIndicator());
@@ -54,8 +140,12 @@ class HomeScreen extends StatelessWidget {
                 final locations = snapshot.data ?? [];
 
                 if (locations.isEmpty) {
-                  return const Center(
-                    child: Text('Brak dostępnych miejsc w bazie Supabase.'),
+                  return Center(
+                    child: Text(
+                      showMuseums
+                          ? 'Brak muzeów z uzupełnioną lokalizacją GPS'
+                          : 'Brak dostępnych miejsc w bazie Supabase',
+                    ),
                   );
                 }
 
@@ -64,7 +154,6 @@ class HomeScreen extends StatelessWidget {
                   itemBuilder: (context, index) {
                     final loc = locations[index];
 
-                    // Bezpieczne pobieranie wartości z uwzględnieniem kolumny 'title'
                     final String title = loc['title'] ?? 'Nieznane miejsce';
                     final double lat = loc['latitude'] != null
                         ? (loc['latitude'] as num).toDouble()

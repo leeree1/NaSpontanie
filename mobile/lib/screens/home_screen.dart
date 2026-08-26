@@ -9,8 +9,9 @@ class HomeScreen extends StatelessWidget {
   Future<List<Map<String, dynamic>>> _fetchLocations() async {
     final response = await Supabase.instance.client
         .from('locations') // Nazwa tabeli w Twojej bazie Supabase
-        .select();
-    
+        .select()
+        .order('id');
+
     return List<Map<String, dynamic>>.from(response);
   }
 
@@ -34,7 +35,7 @@ class HomeScreen extends StatelessWidget {
               style: TextStyle(color: Colors.black87, fontSize: 13),
             ),
           ),
-          
+
           // Pobieranie danych z tabeli 'locations' w Supabase
           Expanded(
             child: FutureBuilder<List<Map<String, dynamic>>>(
@@ -43,7 +44,7 @@ class HomeScreen extends StatelessWidget {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Center(child: CircularProgressIndicator());
                 }
-                
+
                 if (snapshot.hasError) {
                   return Center(
                     child: Text('Błąd ładowania danych: ${snapshot.error}'),
@@ -62,22 +63,35 @@ class HomeScreen extends StatelessWidget {
                   itemCount: locations.length,
                   itemBuilder: (context, index) {
                     final loc = locations[index];
-                    
+
                     // Bezpieczne pobieranie wartości z uwzględnieniem kolumny 'title'
                     final String title = loc['title'] ?? 'Nieznane miejsce';
-                    final double lat = loc['latitude'] != null ? (loc['latitude'] as num).toDouble() : 0.0;
-                    final double lng = loc['longitude'] != null ? (loc['longitude'] as num).toDouble() : 0.0;
+                    final double lat = loc['latitude'] != null
+                        ? (loc['latitude'] as num).toDouble()
+                        : 0.0;
+                    final double lng = loc['longtitude'] != null
+                        ? (loc['longtitude'] as num).toDouble()
+                        : 0.0;
 
                     return Card(
-                      margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      margin: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 6,
+                      ),
                       elevation: 2,
                       child: ListTile(
                         title: Text(
                           title,
                           style: const TextStyle(fontWeight: FontWeight.bold),
                         ),
-                        subtitle: const Text('Dotknij, aby rozpocząć misję GPS'),
-                        trailing: const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.green),
+                        subtitle: const Text(
+                          'Dotknij, aby rozpocząć misję GPS',
+                        ),
+                        trailing: const Icon(
+                          Icons.arrow_forward_ios,
+                          size: 16,
+                          color: Colors.green,
+                        ),
                         onTap: () {
                           Navigator.push(
                             context,

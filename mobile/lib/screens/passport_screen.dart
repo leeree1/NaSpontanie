@@ -5,7 +5,6 @@ class PassportScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Przykładowa lista pieczątek (w przyszłości pobierzemy je z Supabase)
     final List<Map<String, dynamic>> stamps = [
       {'title': 'Rynek', 'unlocked': true},
       {'title': 'Ostrów Tumski', 'unlocked': true},
@@ -22,7 +21,7 @@ class PassportScreen extends StatelessWidget {
         child: GridView.builder(
           itemCount: stamps.length,
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2, // 2 kolumny
+            crossAxisCount: 2,
             crossAxisSpacing: 16,
             mainAxisSpacing: 16,
           ),

@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'auth_service.dart';
 import 'main_screen.dart';
 
+const _quickLoginEmail = String.fromEnvironment('QUICK_LOGIN_EMAIL');
+const _quickLoginPassword = String.fromEnvironment('QUICK_LOGIN_PASSWORD');
+
 class AuthScreen extends StatefulWidget {
   const AuthScreen({super.key});
 
@@ -20,6 +23,19 @@ class _AuthScreenState extends State<AuthScreen> {
   bool _obscurePassword = true;
 
   final AuthService _authService = AuthService();
+
+  Future<void> _quickLogin() async {
+    if (_quickLoginEmail.isEmpty || _quickLoginPassword.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Brak skonfigurowanego konta testowego')),
+      );
+      return;
+    }
+
+    _emailController.text = _quickLoginEmail;
+    _passwordController.text = _quickLoginPassword;
+    await _submit();
+  }
 
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
@@ -271,6 +287,25 @@ class _AuthScreenState extends State<AuthScreen> {
                             ),
                     ),
                   ),
+                  if (_isLogin) ...[
+                    const SizedBox(height: 8),
+                    SizedBox(
+                      width: double.infinity,
+                      height: 48,
+                      child: OutlinedButton.icon(
+                        onPressed: _isLoading ? null : _quickLogin,
+                        icon: const Icon(Icons.flash_on_outlined),
+                        label: const Text('Szybkie logowanie'),
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: const Color(0xFF1B2A41),
+                          side: const BorderSide(color: Color(0xFF1B2A41)),
+                          shape: const RoundedRectangleBorder(
+                            borderRadius: fieldRadius,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                   const SizedBox(height: 12),
                   TextButton(
                     onPressed: _isLoading

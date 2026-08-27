@@ -18,7 +18,7 @@ class TripCostCalculator {
       estimatedCost += 30.0;
     }
 
-    estimatedCost += 30.0;
+    estimatedCost += 40.0;
 
     return {
       'estimatedCost': estimatedCost,

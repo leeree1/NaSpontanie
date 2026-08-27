@@ -17,7 +17,7 @@ void main() {
   test('validates email and username input', () {
     expect(AuthService.validateEmail('user@example.com'), isNull);
     expect(AuthService.validateEmail('not-an-email'), isNotNull);
-    expect(AuthService.validateUsername('user_123'), isNull);
-    expect(AuthService.validateUsername('<script>'), isNotNull);
+    expect(AuthService.validateDisplayName('user_123'), isNull);
+    expect(AuthService.validateDisplayName('<script>'), isNotNull);
   });
 }

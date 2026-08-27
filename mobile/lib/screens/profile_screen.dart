@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'auth_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -32,17 +31,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Future<void> _signOut() async {
     await _client.auth.signOut();
-    if (!mounted) return;
-    Navigator.of(context).pushAndRemoveUntil(
-      MaterialPageRoute(builder: (_) => const AuthScreen()),
-      (_) => false,
-    );
   }
 
   @override
   Widget build(BuildContext context) {
     final user = _client.auth.currentUser;
-    if (user == null) return const AuthScreen();
+    if (user == null) return const SizedBox.shrink();
 
     return Scaffold(
       appBar: AppBar(title: const Text('Profil')),

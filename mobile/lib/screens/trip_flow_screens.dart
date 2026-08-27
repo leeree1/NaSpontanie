@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'main_screen.dart';
 
-// --- 1. EKRAN ŁADOWANIA ---
 class GeneratingTripScreen extends StatefulWidget {
   final String startLocation;
   final double hours;
@@ -11,14 +9,14 @@ class GeneratingTripScreen extends StatefulWidget {
   final List<Map<String, dynamic>> locations;
 
   const GeneratingTripScreen({
-    Key? key,
+    super.key,
     required this.startLocation,
     required this.hours,
     required this.budget,
     required this.transport,
     required this.calculatedCost,
     required this.locations,
-  }) : super(key: key);
+  });
 
   @override
   State<GeneratingTripScreen> createState() => _GeneratingTripScreenState();
@@ -59,7 +57,11 @@ class _GeneratingTripScreenState extends State<GeneratingTripScreen> {
             SizedBox(height: 24),
             Text(
               'Generowanie trasy...',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.green),
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: Colors.green,
+              ),
             ),
             SizedBox(height: 8),
             Text(
@@ -73,7 +75,6 @@ class _GeneratingTripScreenState extends State<GeneratingTripScreen> {
   }
 }
 
-// --- 2. EKRAN PROPOZYCJI TRASY ---
 class TripProposalScreen extends StatelessWidget {
   final String startLocation;
   final double hours;
@@ -83,14 +84,14 @@ class TripProposalScreen extends StatelessWidget {
   final List<Map<String, dynamic>> locations;
 
   const TripProposalScreen({
-    Key? key,
+    super.key,
     required this.startLocation,
     required this.hours,
     required this.budget,
     required this.transport,
     required this.calculatedCost,
     required this.locations,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -106,7 +107,9 @@ class TripProposalScreen extends StatelessWidget {
           children: [
             Card(
               elevation: 3,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: Column(
@@ -114,7 +117,10 @@ class TripProposalScreen extends StatelessWidget {
                   children: [
                     const Text(
                       'Szczegóły wygenerowanej wyprawy',
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                     const Divider(height: 20),
                     Text('• Start: $startLocation'),
@@ -125,20 +131,63 @@ class TripProposalScreen extends StatelessWidget {
                     const SizedBox(height: 6),
                     Text(
                       '• Szacowany koszt: ${calculatedCost.toStringAsFixed(2)} PLN',
-                      style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.green),
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.green,
+                      ),
                     ),
                     const SizedBox(height: 6),
-                    Text('• Znaleziono aktywne punkty: ${locations.length}'),
+                    Text('• Punkty na trasie: ${locations.length}'),
                   ],
                 ),
               ),
             ),
-            const Spacer(),
+            const SizedBox(height: 16),
+            const Text(
+              'Punkty trasy',
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 8),
+            Expanded(
+              child: ListView.builder(
+                itemCount: locations.length,
+                itemBuilder: (context, index) {
+                  final loc = locations[index];
+                  final title =
+                      loc['title']?.toString() ?? 'Punkt ${index + 1}';
+                  final xp = loc['location_xp'];
+                  return ListTile(
+                    leading: CircleAvatar(
+                      backgroundColor: Colors.green[50],
+                      child: Text(
+                        '${index + 1}',
+                        style: TextStyle(
+                          color: Colors.green[800],
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                    title: Text(title),
+                    trailing: xp != null
+                        ? Text(
+                            '+$xp XP',
+                            style: TextStyle(
+                              color: Colors.green[800],
+                              fontWeight: FontWeight.bold,
+                            ),
+                          )
+                        : null,
+                  );
+                },
+              ),
+            ),
             ElevatedButton.icon(
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const ActiveTripScreen()),
+                  MaterialPageRoute(
+                    builder: (context) => const ActiveTripScreen(),
+                  ),
                 );
               },
               icon: const Icon(Icons.play_arrow),
@@ -152,7 +201,7 @@ class TripProposalScreen extends StatelessWidget {
             const SizedBox(height: 12),
             OutlinedButton(
               onPressed: () {
-                Navigator.pop(context); // Powrót do formularza
+                Navigator.pop(context);
               },
               child: const Text('Edytuj parametry'),
             ),
@@ -173,7 +222,10 @@ class TripProposalScreen extends StatelessWidget {
                   ),
                 );
               },
-              child: const Text('Wygeneruj ponownie', style: TextStyle(color: Colors.grey)),
+              child: const Text(
+                'Wygeneruj ponownie',
+                style: TextStyle(color: Colors.grey),
+              ),
             ),
           ],
         ),
@@ -182,9 +234,8 @@ class TripProposalScreen extends StatelessWidget {
   }
 }
 
-// --- 3. EKRAN AKTYWNEJ TRASY ---
 class ActiveTripScreen extends StatelessWidget {
-  const ActiveTripScreen({Key? key}) : super(key: key);
+  const ActiveTripScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -217,7 +268,9 @@ class ActiveTripScreen extends StatelessWidget {
               onPressed: () {
                 Navigator.pushReplacement(
                   context,
-                  MaterialPageRoute(builder: (context) => const TripSummaryScreen()),
+                  MaterialPageRoute(
+                    builder: (context) => const TripSummaryScreen(),
+                  ),
                 );
               },
               style: ElevatedButton.styleFrom(
@@ -225,7 +278,10 @@ class ActiveTripScreen extends StatelessWidget {
                 foregroundColor: Colors.white,
                 minimumSize: const Size(double.infinity, 50),
               ),
-              child: const Text('Zakończ trasę', style: TextStyle(fontSize: 16)),
+              child: const Text(
+                'Zakończ trasę',
+                style: TextStyle(fontSize: 16),
+              ),
             ),
           ],
         ),
@@ -234,9 +290,8 @@ class ActiveTripScreen extends StatelessWidget {
   }
 }
 
-// --- 4. EKRAN PODSUMOWANIA ---
 class TripSummaryScreen extends StatelessWidget {
-  const TripSummaryScreen({Key? key}) : super(key: key);
+  const TripSummaryScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -266,18 +321,17 @@ class TripSummaryScreen extends StatelessWidget {
             const Spacer(),
             ElevatedButton(
               onPressed: () {
-                Navigator.pushAndRemoveUntil(
-                  context,
-                  MaterialPageRoute(builder: (context) => const MainScreen()),
-                  (route) => false,
-                );
+                Navigator.of(context).popUntil((route) => route.isFirst);
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.green[700],
                 foregroundColor: Colors.white,
                 minimumSize: const Size(double.infinity, 50),
               ),
-              child: const Text('Zakończ i wróć do głównego menu', style: TextStyle(fontSize: 16)),
+              child: const Text(
+                'Zakończ i wróć do głównego menu',
+                style: TextStyle(fontSize: 16),
+              ),
             ),
           ],
         ),

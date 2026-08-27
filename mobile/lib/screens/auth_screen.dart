@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'auth_service.dart';
-import 'main_screen.dart';
 
 const _quickLoginEmail = 'testowy@gmail.com';
 const _quickLoginPassword = 'oiLgEzz#h3MtYcoT';
@@ -57,24 +57,19 @@ class _AuthScreenState extends State<AuthScreen> {
         if (response.session == null && mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text('Sprawdź email i potwierdz konto przed logowaniem'),
+              content: Text('Sprawdź email i potwierdź konto przed logowaniem'),
             ),
           );
-          return;
         }
-      }
-
-      if (mounted) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (_) => const MainScreen()),
-        );
       }
     } catch (e) {
       if (!mounted) return;
+      final message = e is AuthException
+          ? e.message
+          : 'Coś poszło nie tak. Spróbuj ponownie.';
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Błąd: ${e.toString()}'),
+          content: Text(message),
           backgroundColor: Colors.red,
         ),
       );
@@ -242,7 +237,9 @@ class _AuthScreenState extends State<AuthScreen> {
                         ),
                       ),
                     ),
-                    validator: (v) => AuthService.validatePassword(v ?? ''),
+                    validator: (v) => _isLogin
+                        ? AuthService.validatePasswordRequired(v ?? '')
+                        : AuthService.validatePassword(v ?? ''),
                   ),
                   const SizedBox(height: 12),
 

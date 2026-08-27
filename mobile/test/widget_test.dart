@@ -20,4 +20,10 @@ void main() {
     expect(AuthService.validateDisplayName('user_123'), isNull);
     expect(AuthService.validateDisplayName('<script>'), isNotNull);
   });
+
+  test('login only requires a non-empty password', () {
+    expect(AuthService.validatePasswordRequired('weakpass'), isNull);
+    expect(AuthService.validatePasswordRequired(''), isNotNull);
+    expect(AuthService.validatePassword('weakpass'), isNotNull);
+  });
 }

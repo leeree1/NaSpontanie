@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 
+import '../../theme/app_theme.dart';
+
 class PassportScreen extends StatelessWidget {
   const PassportScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final List<Map<String, dynamic>> stamps = [
+    final stamps = [
       {'title': 'Rynek', 'unlocked': true},
       {'title': 'Ostrów Tumski', 'unlocked': true},
       {'title': 'Hala Stulecia', 'unlocked': false},
@@ -17,7 +19,7 @@ class PassportScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: const Text('Twój Cyfrowy Paszport')),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16),
         child: GridView.builder(
           itemCount: stamps.length,
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
@@ -27,14 +29,13 @@ class PassportScreen extends StatelessWidget {
           ),
           itemBuilder: (context, index) {
             final stamp = stamps[index];
-            final bool isUnlocked = stamp['unlocked'];
-
+            final unlocked = stamp['unlocked'] as bool;
             return Container(
               decoration: BoxDecoration(
-                color: isUnlocked ? Colors.blue.shade50 : Colors.grey.shade200,
+                color: unlocked ? const Color(0xFFE3F2FD) : const Color(0xFFEEEEEE),
                 borderRadius: BorderRadius.circular(16),
                 border: Border.all(
-                  color: isUnlocked ? Colors.blue : Colors.grey.shade400,
+                  color: unlocked ? const Color(0xFF2196F3) : AppColors.muted,
                   width: 2,
                 ),
               ),
@@ -42,25 +43,25 @@ class PassportScreen extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Icon(
-                    isUnlocked ? Icons.verified : Icons.lock,
+                    unlocked ? Icons.verified : Icons.lock,
                     size: 50,
-                    color: isUnlocked ? Colors.blue : Colors.grey,
+                    color: unlocked ? const Color(0xFF2196F3) : AppColors.muted,
                   ),
                   const SizedBox(height: 10),
                   Text(
-                    stamp['title'],
+                    stamp['title'] as String,
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
-                      color: isUnlocked ? Colors.black87 : Colors.grey,
+                      color: unlocked ? AppColors.textPrimary : AppColors.muted,
                     ),
                   ),
                   const SizedBox(height: 5),
                   Text(
-                    isUnlocked ? 'Zdobyta!' : 'Zablokowana',
+                    unlocked ? 'Zdobyta!' : 'Zablokowana',
                     style: TextStyle(
                       fontSize: 12,
-                      color: isUnlocked ? Colors.green.shade700 : Colors.grey.shade600,
+                      color: unlocked ? AppColors.primaryDark : AppColors.textSecondary,
                     ),
                   ),
                 ],

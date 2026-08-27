@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../theme/app_theme.dart';
+
 class MapScreen extends StatelessWidget {
   const MapScreen({super.key});
 
@@ -11,7 +13,7 @@ class MapScreen extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.map, size: 64),
+            Icon(Icons.map, size: 64, color: AppColors.primary),
             SizedBox(height: 16),
             Text('Mapa — ekran tymczasowy'),
           ],

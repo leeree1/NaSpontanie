@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'auth_service.dart';
+
+import '../../services/auth_service.dart';
+import '../../theme/app_theme.dart';
+import '../../widgets/app_widgets.dart';
 
 const _quickLoginEmail = 'testowy@gmail.com';
 const _quickLoginPassword = 'oiLgEzz#h3MtYcoT';
@@ -68,10 +71,7 @@ class _AuthScreenState extends State<AuthScreen> {
           ? e.message
           : 'Coś poszło nie tak. Spróbuj ponownie.';
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(message),
-          backgroundColor: Colors.red,
-        ),
+        SnackBar(content: Text(message), backgroundColor: AppColors.error),
       );
     } finally {
       if (mounted) setState(() => _isLoading = false);
@@ -82,9 +82,7 @@ class _AuthScreenState extends State<AuthScreen> {
     final email = _emailController.text;
     final error = AuthService.validateEmail(email);
     if (error != null) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(error)));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error)));
       return;
     }
     try {
@@ -98,21 +96,14 @@ class _AuthScreenState extends State<AuthScreen> {
     } catch (_) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Nie udało się wysłać linku resetującego.'),
-        ),
+        const SnackBar(content: Text('Nie udało się wysłać linku resetującego.')),
       );
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    const orange = Color(0xFFFF704D);
-    const background = Color(0xFFF2F2F2);
-    const fieldRadius = BorderRadius.all(Radius.circular(8));
-
     return Scaffold(
-      backgroundColor: background,
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
@@ -127,7 +118,7 @@ class _AuthScreenState extends State<AuthScreen> {
                     height: 132,
                     padding: const EdgeInsets.all(8),
                     decoration: const BoxDecoration(
-                      color: Colors.white,
+                      color: AppColors.surface,
                       shape: BoxShape.circle,
                     ),
                     child: ClipOval(
@@ -141,7 +132,6 @@ class _AuthScreenState extends State<AuthScreen> {
                   const Text(
                     'NaSpontanie',
                     style: TextStyle(
-                      color: Color(0xFF1B2A41),
                       fontSize: 30,
                       fontWeight: FontWeight.w700,
                     ),
@@ -150,91 +140,42 @@ class _AuthScreenState extends State<AuthScreen> {
                   Text(
                     _isLogin ? 'Zaloguj się' : 'Zarejestruj się',
                     style: const TextStyle(
-                      color: Color(0xFF1B2A41),
                       fontSize: 22,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
                   const SizedBox(height: 28),
-
-                  TextFormField(
+                  AppTextField(
                     controller: _emailController,
+                    label: 'E-mail',
                     keyboardType: TextInputType.emailAddress,
-                    decoration: const InputDecoration(
-                      labelText: 'E-mail',
-                      filled: true,
-                      fillColor: Colors.white,
-                      border: OutlineInputBorder(
-                        borderRadius: fieldRadius,
-                        borderSide: BorderSide.none,
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: fieldRadius,
-                        borderSide: BorderSide.none,
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: fieldRadius,
-                        borderSide: BorderSide(color: orange, width: 2),
-                      ),
-                    ),
+                    focusColor: AppColors.accent,
                     validator: (v) => AuthService.validateEmail(v ?? ''),
                   ),
                   const SizedBox(height: 14),
-
                   if (!_isLogin) ...[
-                    TextFormField(
+                    AppTextField(
                       controller: _displayNameController,
-                      decoration: const InputDecoration(
-                        labelText: 'Imię',
-                        filled: true,
-                        fillColor: Colors.white,
-                        border: OutlineInputBorder(
-                          borderRadius: fieldRadius,
-                          borderSide: BorderSide.none,
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: fieldRadius,
-                          borderSide: BorderSide.none,
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: fieldRadius,
-                          borderSide: BorderSide(color: orange, width: 2),
-                        ),
-                      ),
+                      label: 'Imię',
+                      focusColor: AppColors.accent,
                       validator: (v) =>
                           AuthService.validateDisplayName(v ?? ''),
                     ),
                     const SizedBox(height: 14),
                   ],
-
-                  TextFormField(
+                  AppTextField(
                     controller: _passwordController,
+                    label: 'Hasło',
                     obscureText: _obscurePassword,
-                    decoration: InputDecoration(
-                      labelText: 'Hasło',
-                      filled: true,
-                      fillColor: Colors.white,
-                      border: const OutlineInputBorder(
-                        borderRadius: fieldRadius,
-                        borderSide: BorderSide.none,
+                    focusColor: AppColors.accent,
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        _obscurePassword
+                            ? Icons.visibility_outlined
+                            : Icons.visibility_off_outlined,
                       ),
-                      enabledBorder: const OutlineInputBorder(
-                        borderRadius: fieldRadius,
-                        borderSide: BorderSide.none,
-                      ),
-                      focusedBorder: const OutlineInputBorder(
-                        borderRadius: fieldRadius,
-                        borderSide: BorderSide(color: orange, width: 2),
-                      ),
-                      suffixIcon: IconButton(
-                        icon: Icon(
-                          _obscurePassword
-                              ? Icons.visibility_outlined
-                              : Icons.visibility_off_outlined,
-                        ),
-                        onPressed: () => setState(
-                          () => _obscurePassword = !_obscurePassword,
-                        ),
+                      onPressed: () => setState(
+                        () => _obscurePassword = !_obscurePassword,
                       ),
                     ),
                     validator: (v) => _isLogin
@@ -242,7 +183,6 @@ class _AuthScreenState extends State<AuthScreen> {
                         : AuthService.validatePassword(v ?? ''),
                   ),
                   const SizedBox(height: 12),
-
                   if (_isLogin)
                     Align(
                       alignment: Alignment.centerRight,
@@ -251,56 +191,20 @@ class _AuthScreenState extends State<AuthScreen> {
                         child: const Text('Nie pamiętasz hasła?'),
                       ),
                     ),
-
                   const SizedBox(height: 8),
-                  SizedBox(
-                    width: double.infinity,
-                    height: 52,
-                    child: ElevatedButton(
-                      onPressed: _isLoading ? null : _submit,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: orange,
-                        foregroundColor: Colors.white,
-                        elevation: 0,
-                        shape: const RoundedRectangleBorder(
-                          borderRadius: fieldRadius,
-                        ),
-                      ),
-                      child: _isLoading
-                          ? const SizedBox(
-                              width: 22,
-                              height: 22,
-                              child: CircularProgressIndicator(
-                                color: Colors.white,
-                                strokeWidth: 2,
-                              ),
-                            )
-                          : Text(
-                              _isLogin ? 'Zaloguj się' : 'Zarejestruj się',
-                              style: const TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w700,
-                              ),
-                            ),
-                    ),
+                  AppButton(
+                    label: _isLogin ? 'Zaloguj się' : 'Zarejestruj się',
+                    onPressed: _isLoading ? null : _submit,
+                    isLoading: _isLoading,
+                    color: AppColors.accent,
                   ),
                   if (_isLogin) ...[
                     const SizedBox(height: 8),
-                    SizedBox(
-                      width: double.infinity,
-                      height: 48,
-                      child: OutlinedButton.icon(
-                        onPressed: _isLoading ? null : _quickLogin,
-                        icon: const Icon(Icons.flash_on_outlined),
-                        label: const Text('Szybkie logowanie'),
-                        style: OutlinedButton.styleFrom(
-                          foregroundColor: const Color(0xFF1B2A41),
-                          side: const BorderSide(color: Color(0xFF1B2A41)),
-                          shape: const RoundedRectangleBorder(
-                            borderRadius: fieldRadius,
-                          ),
-                        ),
-                      ),
+                    AppButton(
+                      label: 'Szybkie logowanie',
+                      icon: Icons.flash_on_outlined,
+                      outlined: true,
+                      onPressed: _isLoading ? null : _quickLogin,
                     ),
                   ],
                   const SizedBox(height: 12),
@@ -308,13 +212,7 @@ class _AuthScreenState extends State<AuthScreen> {
                     onPressed: _isLoading
                         ? null
                         : () => setState(() => _isLogin = !_isLogin),
-                    child: Text(
-                      _isLogin ? 'Zarejestruj się' : 'Zaloguj się',
-                      style: const TextStyle(
-                        color: Color(0xFF1B2A41),
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
+                    child: Text(_isLogin ? 'Zarejestruj się' : 'Zaloguj się'),
                   ),
                 ],
               ),

@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
-import '../models/location_model.dart';
-import '../services/location_service.dart';
+
+import '../../models/location_model.dart';
+import '../../services/location_service.dart';
+import '../../theme/app_theme.dart';
+import '../../widgets/app_widgets.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key, this.onOpenPlanner});
@@ -37,9 +40,7 @@ class _HomeScreenState extends State<HomeScreen> {
         });
       }
     } catch (e) {
-      if (mounted) {
-        setState(() => _isLoading = false);
-      }
+      if (mounted) setState(() => _isLoading = false);
     }
   }
 
@@ -50,9 +51,7 @@ class _HomeScreenState extends State<HomeScreen> {
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (context) => const Center(
-        child: CircularProgressIndicator(color: Colors.green),
-      ),
+      builder: (context) => const Center(child: CircularProgressIndicator()),
     );
 
     try {
@@ -119,7 +118,7 @@ class _HomeScreenState extends State<HomeScreen> {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
-      builder: (context) => Padding(
+      builder: (sheetContext) => Padding(
         padding: const EdgeInsets.all(24),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -130,7 +129,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 width: 40,
                 height: 4,
                 decoration: BoxDecoration(
-                  color: Colors.grey[300],
+                  color: AppColors.muted,
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
@@ -143,7 +142,7 @@ class _HomeScreenState extends State<HomeScreen> {
             const SizedBox(height: 8),
             Row(
               children: [
-                const Icon(Icons.star, size: 16, color: Colors.amber),
+                const Icon(Icons.star, size: 16, color: AppColors.secondary),
                 const SizedBox(width: 4),
                 Text(
                   '${loc.rating} Ocena',
@@ -151,18 +150,15 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 const SizedBox(width: 16),
                 Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 8,
-                    vertical: 2,
-                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                   decoration: BoxDecoration(
-                    color: Colors.green[100],
+                    color: AppColors.primarySoft,
                     borderRadius: BorderRadius.circular(6),
                   ),
                   child: Text(
                     'Nagroda: +${loc.xp} XP',
-                    style: TextStyle(
-                      color: Colors.green[900],
+                    style: const TextStyle(
+                      color: AppColors.primaryDark,
                       fontWeight: FontWeight.bold,
                       fontSize: 12,
                     ),
@@ -173,28 +169,16 @@ class _HomeScreenState extends State<HomeScreen> {
             const SizedBox(height: 16),
             Text(
               loc.description,
-              style: const TextStyle(
-                color: Colors.black87,
-                fontSize: 14,
-                height: 1.4,
-              ),
+              style: const TextStyle(fontSize: 14, height: 1.4),
             ),
             const SizedBox(height: 24),
-            ElevatedButton.icon(
+            AppButton(
+              label: 'Sprawdź obecność przez GPS',
+              icon: Icons.gps_fixed,
               onPressed: () {
-                Navigator.pop(context);
+                Navigator.pop(sheetContext);
                 _verifyGpsAndRecordVisit(context, loc);
               },
-              icon: const Icon(Icons.gps_fixed),
-              label: const Text('Sprawdź obecność przez GPS'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.green[700],
-                foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(vertical: 14),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-              ),
             ),
             const SizedBox(height: 12),
           ],
@@ -206,20 +190,20 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8F9FA),
+      backgroundColor: AppColors.background,
       body: SafeArea(
         child: CustomScrollView(
           slivers: [
             SliverToBoxAdapter(
               child: Padding(
-                padding: const EdgeInsets.all(20.0),
+                padding: const EdgeInsets.all(20),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Row(
+                    const Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Column(
+                        Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
@@ -227,7 +211,6 @@ class _HomeScreenState extends State<HomeScreen> {
                               style: TextStyle(
                                 fontSize: 22,
                                 fontWeight: FontWeight.bold,
-                                color: Colors.black87,
                               ),
                             ),
                             SizedBox(height: 4),
@@ -235,57 +218,27 @@ class _HomeScreenState extends State<HomeScreen> {
                               'Gotowy na spontaniczną wyprawę we Wrocławiu?',
                               style: TextStyle(
                                 fontSize: 13,
-                                color: Colors.black54,
+                                color: AppColors.textSecondary,
                               ),
                             ),
                           ],
                         ),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 6,
-                          ),
-                          decoration: BoxDecoration(
-                            color: Colors.green[100],
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: Row(
-                            children: [
-                              const Icon(
-                                Icons.bolt,
-                                color: Colors.green,
-                                size: 18,
-                              ),
-                              const SizedBox(width: 4),
-                              Text(
-                                '1250 XP',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.green[900],
-                                  fontSize: 13,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
+                        XpBadge(xp: 1250, chip: true),
                       ],
                     ),
                     const SizedBox(height: 20),
                     Container(
                       padding: const EdgeInsets.all(20),
                       decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: [
-                            Colors.green.shade800,
-                            Colors.green.shade600,
-                          ],
+                        gradient: const LinearGradient(
+                          colors: [AppColors.primaryDark, AppColors.primaryMid],
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
                         ),
                         borderRadius: BorderRadius.circular(20),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.green.withValues(alpha: 0.3),
+                            color: AppColors.primary.withValues(alpha: 0.3),
                             blurRadius: 10,
                             offset: const Offset(0, 4),
                           ),
@@ -300,7 +253,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 const Text(
                                   'Zaplanuj wypad z algorytmem',
                                   style: TextStyle(
-                                    color: Colors.white,
+                                    color: AppColors.onPrimary,
                                     fontSize: 16,
                                     fontWeight: FontWeight.bold,
                                   ),
@@ -309,7 +262,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 const Text(
                                   'Dopasuj czas, budżet i transport w kilka sekund.',
                                   style: TextStyle(
-                                    color: Colors.white70,
+                                    color: AppColors.onPrimary,
                                     fontSize: 12,
                                   ),
                                 ),
@@ -317,9 +270,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                 ElevatedButton(
                                   onPressed: widget.onOpenPlanner,
                                   style: ElevatedButton.styleFrom(
-                                    backgroundColor: Colors.white,
-                                    foregroundColor: Colors.green.shade800,
+                                    backgroundColor: AppColors.surface,
+                                    foregroundColor: AppColors.primaryDark,
                                     elevation: 0,
+                                    minimumSize: const Size(0, 36),
                                     padding: const EdgeInsets.symmetric(
                                       horizontal: 16,
                                       vertical: 8,
@@ -341,7 +295,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                           const Icon(
                             Icons.explore_outlined,
-                            color: Colors.white24,
+                            color: Color(0x3DFFFFFF),
                             size: 70,
                           ),
                         ],
@@ -353,7 +307,6 @@ class _HomeScreenState extends State<HomeScreen> {
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
-                        color: Colors.black87,
                       ),
                     ),
                   ],
@@ -362,9 +315,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             if (_isLoading)
               const SliverFillRemaining(
-                child: Center(
-                  child: CircularProgressIndicator(color: Colors.green),
-                ),
+                child: Center(child: CircularProgressIndicator()),
               )
             else if (_locations.isEmpty)
               const SliverFillRemaining(
@@ -379,7 +330,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     return Container(
                       margin: const EdgeInsets.only(bottom: 16),
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: AppColors.surface,
                         borderRadius: BorderRadius.circular(16),
                         boxShadow: [
                           BoxShadow(
@@ -403,27 +354,25 @@ class _HomeScreenState extends State<HomeScreen> {
                                   width: 56,
                                   height: 56,
                                   decoration: BoxDecoration(
-                                    color: Colors.green[50],
+                                    color: AppColors.primaryLight,
                                     borderRadius: BorderRadius.circular(12),
                                   ),
                                   child: const Icon(
                                     Icons.place,
-                                    color: Colors.green,
+                                    color: AppColors.primary,
                                     size: 28,
                                   ),
                                 ),
                                 const SizedBox(width: 16),
                                 Expanded(
                                   child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                       Text(
                                         loc.title,
                                         style: const TextStyle(
                                           fontSize: 15,
                                           fontWeight: FontWeight.bold,
-                                          color: Colors.black87,
                                         ),
                                       ),
                                       const SizedBox(height: 4),
@@ -433,7 +382,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                         overflow: TextOverflow.ellipsis,
                                         style: const TextStyle(
                                           fontSize: 13,
-                                          color: Colors.black54,
+                                          color: AppColors.textSecondary,
                                         ),
                                       ),
                                       const SizedBox(height: 8),
@@ -442,7 +391,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                           const Icon(
                                             Icons.star,
                                             size: 14,
-                                            color: Colors.amber,
+                                            color: AppColors.secondary,
                                           ),
                                           const SizedBox(width: 4),
                                           Text(
@@ -453,25 +402,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                             ),
                                           ),
                                           const SizedBox(width: 12),
-                                          Container(
-                                            padding: const EdgeInsets.symmetric(
-                                              horizontal: 8,
-                                              vertical: 2,
-                                            ),
-                                            decoration: BoxDecoration(
-                                              color: Colors.green[50],
-                                              borderRadius:
-                                                  BorderRadius.circular(6),
-                                            ),
-                                            child: Text(
-                                              '+${loc.xp} XP',
-                                              style: TextStyle(
-                                                fontSize: 11,
-                                                fontWeight: FontWeight.bold,
-                                                color: Colors.green[800],
-                                              ),
-                                            ),
-                                          ),
+                                          XpBadge(xp: loc.xp),
                                         ],
                                       ),
                                     ],
@@ -480,7 +411,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 const Icon(
                                   Icons.arrow_forward_ios,
                                   size: 14,
-                                  color: Colors.grey,
+                                  color: AppColors.muted,
                                 ),
                               ],
                             ),

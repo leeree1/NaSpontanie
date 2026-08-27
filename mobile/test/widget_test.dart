@@ -6,7 +6,7 @@
 // tree, read text, and verify that the values of widget properties are correct.
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mobile/screens/auth_service.dart';
+import 'package:mobile/services/auth_service.dart';
 
 void main() {
   test('validates a strong password', () {

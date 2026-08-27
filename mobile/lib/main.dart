@@ -2,8 +2,9 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'screens/auth_screen.dart';
+import 'screens/auth_screen/auth_screen.dart';
 import 'screens/main_screen.dart';
+import 'theme/app_theme.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -21,9 +22,10 @@ class NaSpontanieApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: AuthWrapper(),
+      theme: AppTheme.light,
+      home: const AuthWrapper(),
     );
   }
 }

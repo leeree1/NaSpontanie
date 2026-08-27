@@ -13,7 +13,7 @@ class _AuthScreenState extends State<AuthScreen> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  final _usernameController = TextEditingController();
+  final _displayNameController = TextEditingController();
 
   bool _isLogin = true;
   bool _isLoading = false;
@@ -36,7 +36,7 @@ class _AuthScreenState extends State<AuthScreen> {
         final response = await _authService.signUp(
           _emailController.text.trim(),
           _passwordController.text,
-          _usernameController.text.trim(),
+          _displayNameController.text.trim(),
         );
         if (response.session == null && mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -134,15 +134,16 @@ class _AuthScreenState extends State<AuthScreen> {
                   Column(
                     children: [
                       TextFormField(
-                        controller: _usernameController,
+                        controller: _displayNameController,
                         decoration: InputDecoration(
-                          labelText: 'Nazwa użytkownika',
+                          labelText: 'Nazwa wyświetlana',
                           prefixIcon: Icon(Icons.person),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
                           ),
                         ),
-                        validator: (v) => AuthService.validateUsername(v ?? ''),
+                        validator: (v) =>
+                            AuthService.validateDisplayName(v ?? ''),
                       ),
                       SizedBox(height: 16),
                     ],
@@ -223,7 +224,7 @@ class _AuthScreenState extends State<AuthScreen> {
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
-    _usernameController.dispose();
+    _displayNameController.dispose();
     super.dispose();
   }
 }

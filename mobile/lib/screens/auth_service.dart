@@ -21,11 +21,11 @@ class AuthService {
         : 'Hasło: min. 8 znaków, wielka i mała litera, cyfra oraz znak specjalny';
   }
 
-  static String? validateUsername(String value) {
+  static String? validateDisplayName(String value) {
     final trimmed = value.trim();
-    final username = SecurityService.sanitizeInput(trimmed);
-    return username == trimmed &&
-            RegExp(r'^[a-zA-Z0-9_.-]{3,30}$').hasMatch(username)
+    final displayName = SecurityService.sanitizeInput(trimmed);
+    return displayName == trimmed &&
+            RegExp(r'^[a-zA-Z0-9_.-]{3,30}$').hasMatch(displayName)
         ? null
         : 'Nazwa: 3-30 znaków (litery, cyfry, _, . lub -)';
   }
@@ -40,28 +40,26 @@ class AuthService {
     _failedAttempts.add(DateTime.now());
     try {
       await _client.rpc('log_auth_failure', params: {'attempt_email': email});
-    } catch (_) {
-      // Logging must never reveal whether an account exists.
-    }
+    } catch (_) {}
   }
 
   Future<AuthResponse> signUp(
     String email,
     String password,
-    String username,
+    String displayName,
   ) async {
     final cleanEmail = SecurityService.sanitizeInput(email).toLowerCase();
-    final cleanUsername = SecurityService.sanitizeInput(username);
+    final cleanDisplayName = SecurityService.sanitizeInput(displayName);
     if (validateEmail(cleanEmail) != null ||
         validatePassword(password) != null ||
-        validateUsername(cleanUsername) != null) {
+        validateDisplayName(cleanDisplayName) != null) {
       throw const AuthException('Dane rejestracji są nieprawidłowe.');
     }
 
     final response = await _client.auth.signUp(
       email: cleanEmail,
       password: password,
-      data: {'username': cleanUsername},
+      data: {'display_name': cleanDisplayName},
     );
 
     if (response.user == null) {

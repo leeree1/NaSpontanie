@@ -11,17 +11,32 @@ Future<void> main() async {
     anonKey: 'sb_publishable_Q0-PukTY3_JXl5NqP26EFw_zlHrviEB',
   );
 
-  runApp(const NaSpontanieApp());
+ // Bezpieczna próba logowania anonimowego z blokiem try-catch
+  final supabase = Supabase.instance.client;
+  if (supabase.auth.currentSession == null) {
+    try {
+      await supabase.auth.signInAnonymously();
+    } catch (e) {
+      debugPrint('Logowanie anonimowe wyłączone w Supabase – działamy w trybie publicznym: $e');
+    }
+  }
+
+  runApp(const MyApp());
 }
 
-class NaSpontanieApp extends StatelessWidget {
-  const NaSpontanieApp({super.key});
+class MyApp extends StatelessWidget {
+  const MyApp({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: MainScreen(),
+      title: 'NaSpontanie',
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
+        useMaterial3: true,
+      ),
+      home: const MainScreen(),
     );
   }
 }

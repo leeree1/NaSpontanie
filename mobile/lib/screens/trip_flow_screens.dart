@@ -7,6 +7,8 @@ class GeneratingTripScreen extends StatefulWidget {
   final double hours;
   final double budget;
   final String transport;
+  final double calculatedCost;
+  final List<Map<String, dynamic>> locations;
 
   const GeneratingTripScreen({
     Key? key,
@@ -14,6 +16,8 @@ class GeneratingTripScreen extends StatefulWidget {
     required this.hours,
     required this.budget,
     required this.transport,
+    required this.calculatedCost,
+    required this.locations,
   }) : super(key: key);
 
   @override
@@ -34,6 +38,8 @@ class _GeneratingTripScreenState extends State<GeneratingTripScreen> {
               hours: widget.hours,
               budget: widget.budget,
               transport: widget.transport,
+              calculatedCost: widget.calculatedCost,
+              locations: widget.locations,
             ),
           ),
         );
@@ -57,7 +63,7 @@ class _GeneratingTripScreenState extends State<GeneratingTripScreen> {
             ),
             SizedBox(height: 8),
             Text(
-              'Dopasowujemy najlepsze punkty do Twoich kryteriów.',
+              'Dopasowujemy punkty i przeliczamy budżet.',
               style: TextStyle(fontSize: 14, color: Colors.black54),
             ),
           ],
@@ -67,12 +73,14 @@ class _GeneratingTripScreenState extends State<GeneratingTripScreen> {
   }
 }
 
-// --- 2. EKRAN PROPOZYCJI TRASY (Odbiera parametry z formularza) ---
+// --- 2. EKRAN PROPOZYCJI TRASY ---
 class TripProposalScreen extends StatelessWidget {
   final String startLocation;
   final double hours;
   final double budget;
   final String transport;
+  final double calculatedCost;
+  final List<Map<String, dynamic>> locations;
 
   const TripProposalScreen({
     Key? key,
@@ -80,6 +88,8 @@ class TripProposalScreen extends StatelessWidget {
     required this.hours,
     required this.budget,
     required this.transport,
+    required this.calculatedCost,
+    required this.locations,
   }) : super(key: key);
 
   @override
@@ -103,17 +113,22 @@ class TripProposalScreen extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const Text(
-                      'Twój spersonalizowany plan',
+                      'Szczegóły wygenerowanej wyprawy',
                       style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                     ),
                     const Divider(height: 20),
-                    Text('• Miejsce startu: $startLocation'),
+                    Text('• Start: $startLocation'),
                     const SizedBox(height: 6),
-                    Text('• Dostępny czas: ${hours.toInt()} h'),
+                    Text('• Czas: ${hours.toInt()} h | Transport: $transport'),
                     const SizedBox(height: 6),
-                    Text('• Budżet: ${budget.toInt()} PLN'),
+                    Text('• Twój budżet: ${budget.toInt()} PLN'),
                     const SizedBox(height: 6),
-                    Text('• Transport: $transport'),
+                    Text(
+                      '• Szacowany koszt: ${calculatedCost.toStringAsFixed(2)} PLN',
+                      style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.green),
+                    ),
+                    const SizedBox(height: 6),
+                    Text('• Znaleziono aktywne punkty: ${locations.length}'),
                   ],
                 ),
               ),
@@ -152,6 +167,8 @@ class TripProposalScreen extends StatelessWidget {
                       hours: hours,
                       budget: budget,
                       transport: transport,
+                      calculatedCost: calculatedCost,
+                      locations: locations,
                     ),
                   ),
                 );

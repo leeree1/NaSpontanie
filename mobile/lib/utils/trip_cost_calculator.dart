@@ -1,4 +1,4 @@
-class TripCalculator {
+class TripCostCalculator {
   static Map<String, dynamic> calculateTripPlan({
     required double availableHours,
     required double userBudget,

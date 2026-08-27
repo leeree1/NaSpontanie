@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../services/location_service.dart';
 import '../../theme/app_theme.dart';
-import '../../utils/trip_calculator.dart';
+import '../../utils/trip_cost_calculator.dart';
 import '../../widgets/app_widgets.dart';
 import 'trip_flow_screens.dart';
 
@@ -75,7 +75,7 @@ class _TripsScreenState extends State<TripsScreen> {
 
       final selected = fetchedLocations.take(countToTake).toList();
       final hours = _hoursFromDuration(_selectedDuration);
-      final calc = TripCalculator.calculateTripPlan(
+      final calc = TripCostCalculator.calculateTripPlan(
         availableHours: hours,
         userBudget: _selectedBudget,
         transportType: _selectedTransport,

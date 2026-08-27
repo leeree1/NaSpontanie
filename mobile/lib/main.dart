@@ -1,5 +1,8 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'screens/auth_screen.dart';
 import 'screens/main_screen.dart';
 
 Future<void> main() async {
@@ -8,35 +11,71 @@ Future<void> main() async {
   // Inicjalizacja Supabase dla projektu NaSpontanie
   await Supabase.initialize(
     url: 'https://osdyyrltmasukfnilhzy.supabase.co',
-    anonKey: 'sb_publishable_Q0-PukTY3_JXl5NqP26EFw_zlHrviEB',
+    publishableKey: 'sb_publishable_Q0-PukTY3_JXl5NqP26EFw_zlHrviEB',
   );
 
- // Bezpieczna próba logowania anonimowego z blokiem try-catch
-  final supabase = Supabase.instance.client;
-  if (supabase.auth.currentSession == null) {
-    try {
-      await supabase.auth.signInAnonymously();
-    } catch (e) {
-      debugPrint('Logowanie anonimowe wyłączone w Supabase – działamy w trybie publicznym: $e');
-    }
-  }
-
-  runApp(const MyApp());
+  runApp(const NaSpontanieApp());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+class NaSpontanieApp extends StatelessWidget {
+  const NaSpontanieApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return const MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'NaSpontanie',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
-        useMaterial3: true,
-      ),
-      home: const MainScreen(),
+      home: AuthWrapper(),
     );
   }
+}
+
+class AuthWrapper extends StatelessWidget {
+  const AuthWrapper({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder<AuthState>(
+      stream: Supabase.instance.client.auth.onAuthStateChange,
+      initialData: AuthState(
+        AuthChangeEvent.initialSession,
+        Supabase.instance.client.auth.currentSession,
+      ),
+      builder: (context, snapshot) {
+        final session = snapshot.data?.session;
+        return session == null
+            ? const AuthScreen()
+            : const _SessionTimeout(child: MainScreen());
+      },
+    );
+  }
+}
+
+class _SessionTimeout extends StatefulWidget {
+  const _SessionTimeout({required this.child});
+
+  final Widget child;
+
+  @override
+  State<_SessionTimeout> createState() => _SessionTimeoutState();
+}
+
+class _SessionTimeoutState extends State<_SessionTimeout> {
+  Timer? _timer;
+
+  @override
+  void initState() {
+    super.initState();
+    _timer = Timer(const Duration(minutes: 30), () {
+      Supabase.instance.client.auth.signOut();
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => widget.child;
 }

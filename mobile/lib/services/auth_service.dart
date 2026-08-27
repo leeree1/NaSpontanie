@@ -21,6 +21,10 @@ class AuthService {
         : 'Hasło: min. 8 znaków, wielka i mała litera, cyfra oraz znak specjalny';
   }
 
+  static String? validatePasswordRequired(String value) {
+    return value.isEmpty ? 'Podaj hasło' : null;
+  }
+
   static String? validateDisplayName(String value) {
     final trimmed = value.trim();
     final displayName = SecurityService.sanitizeInput(trimmed);
@@ -86,13 +90,13 @@ class AuthService {
       if (response.user == null) {
         throw const AuthException('Nieprawidłowy email lub hasło.');
       }
-    } catch (_) {
+      _failedAttempts.clear();
+    } on AuthException {
       await _recordFailedAttempt(cleanEmail);
       rethrow;
     }
   }
 
-  //logout tutaj
   Future<void> signOut() async {
     await _client.auth.signOut();
   }
@@ -105,7 +109,6 @@ class AuthService {
     return _client.auth.currentUser;
   }
 
-  // resetowanie hasla
   Future<void> resetPassword(String email) async {
     final cleanEmail = SecurityService.sanitizeInput(email).toLowerCase();
     if (validateEmail(cleanEmail) != null) {

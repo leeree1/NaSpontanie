@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
-import 'auth_screen.dart';
-import 'home_screen.dart';
-import 'map_screen.dart';
-import 'passport_screen.dart';
-import 'profile_screen.dart';
-import 'trips_screen.dart';
+
+import 'home_screen/home_screen.dart';
+import 'map_screen/map_screen.dart';
+import 'passport_screen/passport_screen.dart';
+import 'profile_screen/profile_screen.dart';
+import 'trips_screen/trips_screen.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -16,20 +15,22 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen> {
   int _currentIndex = 0;
+  late final List<Widget> _screens;
 
-  static const _screens = [
-    HomeScreen(),
-    MapScreen(),
-    PassportScreen(),
-    TripsScreen(),
-    ProfileScreen(),
-  ];
+  @override
+  void initState() {
+    super.initState();
+    _screens = [
+      HomeScreen(onOpenPlanner: () => setState(() => _currentIndex = 3)),
+      const MapScreen(),
+      const PassportScreen(),
+      const TripsScreen(),
+      const ProfileScreen(),
+    ];
+  }
 
   @override
   Widget build(BuildContext context) {
-    if (Supabase.instance.client.auth.currentSession == null) {
-      return const AuthScreen();
-    }
     return Scaffold(
       body: IndexedStack(index: _currentIndex, children: _screens),
       bottomNavigationBar: BottomNavigationBar(

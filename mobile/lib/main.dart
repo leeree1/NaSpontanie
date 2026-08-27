@@ -2,13 +2,13 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'screens/auth_screen.dart';
+import 'screens/auth_screen/auth_screen.dart';
 import 'screens/main_screen.dart';
+import 'theme/app_theme.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Inicjalizacja Supabase dla projektu NaSpontanie
   await Supabase.initialize(
     url: 'https://osdyyrltmasukfnilhzy.supabase.co',
     publishableKey: 'sb_publishable_Q0-PukTY3_JXl5NqP26EFw_zlHrviEB',
@@ -22,9 +22,10 @@ class NaSpontanieApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: AuthWrapper(),
+      theme: AppTheme.light,
+      home: const AuthWrapper(),
     );
   }
 }
@@ -60,12 +61,18 @@ class _SessionTimeout extends StatefulWidget {
 }
 
 class _SessionTimeoutState extends State<_SessionTimeout> {
+  static const _timeout = Duration(minutes: 30);
   Timer? _timer;
 
   @override
   void initState() {
     super.initState();
-    _timer = Timer(const Duration(minutes: 30), () {
+    _resetTimer();
+  }
+
+  void _resetTimer() {
+    _timer?.cancel();
+    _timer = Timer(_timeout, () {
       Supabase.instance.client.auth.signOut();
     });
   }
@@ -77,5 +84,11 @@ class _SessionTimeoutState extends State<_SessionTimeout> {
   }
 
   @override
-  Widget build(BuildContext context) => widget.child;
+  Widget build(BuildContext context) {
+    return Listener(
+      behavior: HitTestBehavior.translucent,
+      onPointerDown: (_) => _resetTimer(),
+      child: widget.child,
+    );
+  }
 }

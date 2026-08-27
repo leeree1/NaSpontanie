@@ -2,6 +2,32 @@ import 'package:flutter/material.dart';
 
 import '../theme/app_theme.dart';
 
+class AppHeader extends StatelessWidget implements PreferredSizeWidget {
+  const AppHeader({
+    super.key,
+    required this.title,
+    this.actions,
+  });
+
+  final String title;
+  final List<Widget>? actions;
+
+  @override
+  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
+
+  @override
+  Widget build(BuildContext context) {
+    return AppBar(
+      title: Text(title),
+      backgroundColor: AppColors.primary,
+      foregroundColor: AppColors.onPrimary,
+      elevation: 0,
+      automaticallyImplyLeading: false,
+      actions: actions,
+    );
+  }
+}
+
 class AppButton extends StatelessWidget {
   const AppButton({
     super.key,

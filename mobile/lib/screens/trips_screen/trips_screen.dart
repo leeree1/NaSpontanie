@@ -110,11 +110,7 @@ class _TripsScreenState extends State<TripsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: AppBar(
-        title: const Text('Planer Wypraw'),
-        backgroundColor: AppColors.surface,
-        foregroundColor: AppColors.textPrimary,
-      ),
+      appBar: const AppHeader(title: 'Planer Wypraw'),
       body: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(

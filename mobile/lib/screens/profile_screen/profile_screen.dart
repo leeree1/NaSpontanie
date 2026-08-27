@@ -64,11 +64,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final user = _client.auth.currentUser;
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Profil'),
-        backgroundColor: AppColors.surface,
-        foregroundColor: AppColors.textPrimary,
-      ),
+      appBar: const AppHeader(title: 'Profil'),
       body: FutureBuilder<Map<String, dynamic>?>(
         future: _profileFuture,
         builder: (context, snapshot) {

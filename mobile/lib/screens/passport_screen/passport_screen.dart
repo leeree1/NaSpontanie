@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../theme/app_theme.dart';
+import '../../widgets/app_widgets.dart';
 
 class PassportScreen extends StatelessWidget {
   const PassportScreen({super.key});
@@ -17,7 +18,7 @@ class PassportScreen extends StatelessWidget {
     ];
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Twój Cyfrowy Paszport')),
+      appBar: const AppHeader(title: 'Twój Cyfrowy Paszport'),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: GridView.builder(

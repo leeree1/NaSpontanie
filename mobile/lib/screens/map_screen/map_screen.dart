@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../theme/app_theme.dart';
+import '../../widgets/app_widgets.dart';
 
 class MapScreen extends StatelessWidget {
   const MapScreen({super.key});
@@ -8,7 +9,7 @@ class MapScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Mapa')),
+      appBar: const AppHeader(title: 'Mapa'),
       body: const Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,

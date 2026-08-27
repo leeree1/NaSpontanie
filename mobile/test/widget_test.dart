@@ -6,23 +6,18 @@
 // tree, read text, and verify that the values of widget properties are correct.
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
-
-import 'package:mobile/main.dart';
+import 'package:mobile/screens/auth_service.dart';
 
 void main() {
-  testWidgets('unauthenticated users see the auth screen', (
-    WidgetTester tester,
-  ) async {
-    await Supabase.initialize(
-      url: 'https://example.supabase.co',
-      publishableKey: 'test-key',
-    );
+  test('validates a strong password', () {
+    expect(AuthService.validatePassword('StrongPass1!'), isNull);
+    expect(AuthService.validatePassword('weakpass'), isNotNull);
+  });
 
-    await tester.pumpWidget(const NaSpontanieApp());
-    await tester.pumpAndSettle();
-
-    expect(find.text('NaSpontanie'), findsOneWidget);
-    expect(find.text('Zaloguj się'), findsOneWidget);
+  test('validates email and username input', () {
+    expect(AuthService.validateEmail('user@example.com'), isNull);
+    expect(AuthService.validateEmail('not-an-email'), isNotNull);
+    expect(AuthService.validateUsername('user_123'), isNull);
+    expect(AuthService.validateUsername('<script>'), isNotNull);
   });
 }

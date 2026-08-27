@@ -8,8 +8,11 @@ class AuthService {
   static final RegExp _emailPattern = RegExp(r'^[^\s@]+@[^\s@]+\.[^\s@]+$');
 
   static String? validateEmail(String value) {
-    final email = SecurityService.sanitizeInput(value).toLowerCase();
-    return _emailPattern.hasMatch(email) ? null : 'Podaj poprawny email';
+    final trimmed = value.trim();
+    final email = SecurityService.sanitizeInput(trimmed).toLowerCase();
+    return email == trimmed.toLowerCase() && _emailPattern.hasMatch(email)
+        ? null
+        : 'Podaj poprawny email';
   }
 
   static String? validatePassword(String value) {
@@ -19,8 +22,10 @@ class AuthService {
   }
 
   static String? validateUsername(String value) {
-    final username = SecurityService.sanitizeInput(value);
-    return RegExp(r'^[a-zA-Z0-9_.-]{3,30}$').hasMatch(username)
+    final trimmed = value.trim();
+    final username = SecurityService.sanitizeInput(trimmed);
+    return username == trimmed &&
+            RegExp(r'^[a-zA-Z0-9_.-]{3,30}$').hasMatch(username)
         ? null
         : 'Nazwa: 3-30 znaków (litery, cyfry, _, . lub -)';
   }
@@ -83,7 +88,7 @@ class AuthService {
       if (response.user == null) {
         throw const AuthException('Nieprawidłowy email lub hasło.');
       }
-    } on AuthException {
+    } catch (_) {
       await _recordFailedAttempt(cleanEmail);
       rethrow;
     }

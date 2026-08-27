@@ -96,123 +96,196 @@ class _AuthScreenState extends State<AuthScreen> {
 
   @override
   Widget build(BuildContext context) {
+    const orange = Color(0xFFFF704D);
+    const background = Color(0xFFF2F2F2);
+    const fieldRadius = BorderRadius.all(Radius.circular(8));
+
     return Scaffold(
+      backgroundColor: background,
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(24.0),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(Icons.explore, size: 80, color: Colors.blue),
-                SizedBox(height: 20),
-                Text(
-                  'NaSpontanie',
-                  style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
-                ),
-                Text(
-                  _isLogin ? 'Zaloguj się' : 'Zarejestruj się',
-                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.w500),
-                ),
-                SizedBox(height: 40),
-
-                TextFormField(
-                  controller: _emailController,
-                  decoration: InputDecoration(
-                    labelText: 'Email',
-                    prefixIcon: Icon(Icons.email),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
+        child: Center(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(24),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    width: 132,
+                    height: 132,
+                    padding: const EdgeInsets.all(8),
+                    decoration: const BoxDecoration(
+                      color: Colors.white,
+                      shape: BoxShape.circle,
+                    ),
+                    child: ClipOval(
+                      child: Image.asset(
+                        'assets/images/spontanlogo_register.png',
+                        fit: BoxFit.cover,
+                      ),
                     ),
                   ),
-                  validator: (v) => AuthService.validateEmail(v ?? ''),
-                ),
-                SizedBox(height: 16),
+                  const SizedBox(height: 22),
+                  const Text(
+                    'NaSpontanie',
+                    style: TextStyle(
+                      color: Color(0xFF1B2A41),
+                      fontSize: 30,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    _isLogin ? 'Zaloguj się' : 'Zarejestruj się',
+                    style: const TextStyle(
+                      color: Color(0xFF1B2A41),
+                      fontSize: 22,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  const SizedBox(height: 28),
 
-                if (!_isLogin)
-                  Column(
-                    children: [
-                      TextFormField(
-                        controller: _displayNameController,
-                        decoration: InputDecoration(
-                          labelText: 'Nazwa wyświetlana',
-                          prefixIcon: Icon(Icons.person),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
+                  TextFormField(
+                    controller: _emailController,
+                    keyboardType: TextInputType.emailAddress,
+                    decoration: const InputDecoration(
+                      labelText: 'E-mail',
+                      filled: true,
+                      fillColor: Colors.white,
+                      border: OutlineInputBorder(
+                        borderRadius: fieldRadius,
+                        borderSide: BorderSide.none,
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: fieldRadius,
+                        borderSide: BorderSide.none,
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: fieldRadius,
+                        borderSide: BorderSide(color: orange, width: 2),
+                      ),
+                    ),
+                    validator: (v) => AuthService.validateEmail(v ?? ''),
+                  ),
+                  const SizedBox(height: 14),
+
+                  if (!_isLogin) ...[
+                    TextFormField(
+                      controller: _displayNameController,
+                      decoration: const InputDecoration(
+                        labelText: 'Imię',
+                        filled: true,
+                        fillColor: Colors.white,
+                        border: OutlineInputBorder(
+                          borderRadius: fieldRadius,
+                          borderSide: BorderSide.none,
                         ),
-                        validator: (v) =>
-                            AuthService.validateDisplayName(v ?? ''),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: fieldRadius,
+                          borderSide: BorderSide.none,
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: fieldRadius,
+                          borderSide: BorderSide(color: orange, width: 2),
+                        ),
                       ),
-                      SizedBox(height: 16),
-                    ],
-                  ),
-
-                TextFormField(
-                  controller: _passwordController,
-                  obscureText: _obscurePassword,
-                  decoration: InputDecoration(
-                    labelText: 'Hasło',
-                    prefixIcon: Icon(Icons.lock),
-                    suffixIcon: IconButton(
-                      icon: Icon(
-                        _obscurePassword
-                            ? Icons.visibility
-                            : Icons.visibility_off,
-                      ),
-                      onPressed: () =>
-                          setState(() => _obscurePassword = !_obscurePassword),
+                      validator: (v) =>
+                          AuthService.validateDisplayName(v ?? ''),
                     ),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                  validator: (v) => AuthService.validatePassword(v ?? ''),
-                ),
-                SizedBox(height: 24),
-
-                if (_isLogin)
-                  Align(
-                    alignment: Alignment.centerRight,
-                    child: TextButton(
-                      onPressed: _isLoading ? null : _resetPassword,
-                      child: const Text('Nie pamiętasz hasła?'),
-                    ),
-                  ),
-
-                // Przycisk
-                SizedBox(
-                  width: double.infinity,
-                  height: 50,
-                  child: ElevatedButton(
-                    onPressed: _isLoading ? null : _submit,
-                    style: ElevatedButton.styleFrom(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                    child: _isLoading
-                        ? CircularProgressIndicator(color: Colors.white)
-                        : Text(
-                            _isLogin ? 'Zaloguj się' : 'Zarejestruj się',
-                            style: TextStyle(fontSize: 18),
-                          ),
-                  ),
-                ),
-                SizedBox(height: 16),
-
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(_isLogin ? 'Nie masz konta?' : 'Masz już konto?'),
-                    TextButton(
-                      onPressed: () => setState(() => _isLogin = !_isLogin),
-                      child: Text(_isLogin ? 'Zarejestruj się' : 'Zaloguj się'),
-                    ),
+                    const SizedBox(height: 14),
                   ],
-                ),
-              ],
+
+                  TextFormField(
+                    controller: _passwordController,
+                    obscureText: _obscurePassword,
+                    decoration: InputDecoration(
+                      labelText: 'Hasło',
+                      filled: true,
+                      fillColor: Colors.white,
+                      border: const OutlineInputBorder(
+                        borderRadius: fieldRadius,
+                        borderSide: BorderSide.none,
+                      ),
+                      enabledBorder: const OutlineInputBorder(
+                        borderRadius: fieldRadius,
+                        borderSide: BorderSide.none,
+                      ),
+                      focusedBorder: const OutlineInputBorder(
+                        borderRadius: fieldRadius,
+                        borderSide: BorderSide(color: orange, width: 2),
+                      ),
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _obscurePassword
+                              ? Icons.visibility_outlined
+                              : Icons.visibility_off_outlined,
+                        ),
+                        onPressed: () => setState(
+                          () => _obscurePassword = !_obscurePassword,
+                        ),
+                      ),
+                    ),
+                    validator: (v) => AuthService.validatePassword(v ?? ''),
+                  ),
+                  const SizedBox(height: 12),
+
+                  if (_isLogin)
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: TextButton(
+                        onPressed: _isLoading ? null : _resetPassword,
+                        child: const Text('Nie pamiętasz hasła?'),
+                      ),
+                    ),
+
+                  const SizedBox(height: 8),
+                  SizedBox(
+                    width: double.infinity,
+                    height: 52,
+                    child: ElevatedButton(
+                      onPressed: _isLoading ? null : _submit,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: orange,
+                        foregroundColor: Colors.white,
+                        elevation: 0,
+                        shape: const RoundedRectangleBorder(
+                          borderRadius: fieldRadius,
+                        ),
+                      ),
+                      child: _isLoading
+                          ? const SizedBox(
+                              width: 22,
+                              height: 22,
+                              child: CircularProgressIndicator(
+                                color: Colors.white,
+                                strokeWidth: 2,
+                              ),
+                            )
+                          : Text(
+                              _isLogin ? 'Zaloguj się' : 'Zarejestruj się',
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  TextButton(
+                    onPressed: _isLoading
+                        ? null
+                        : () => setState(() => _isLogin = !_isLogin),
+                    child: Text(
+                      _isLogin ? 'Zarejestruj się' : 'Zaloguj się',
+                      style: const TextStyle(
+                        color: Color(0xFF1B2A41),
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),

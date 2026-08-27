@@ -27,11 +27,13 @@ class MapTilerMap extends StatefulWidget {
   const MapTilerMap({
     super.key,
     this.pois = const [],
+    this.userLocation,
     this.initialCenter = const LatLng(51.1097, 17.0325),
     this.initialZoom = 13,
   });
 
   final List<MapPoi> pois;
+  final LatLng? userLocation;
   final LatLng initialCenter;
   final double initialZoom;
 
@@ -41,9 +43,12 @@ class MapTilerMap extends StatefulWidget {
 
 class _MapTilerMapState extends State<MapTilerMap> {
   static const _pinSize = 40.0;
+  static const _userDotSize = 18.0;
+  static const _streetZoom = 16.5;
 
   final MapController _mapController = MapController();
   late Future<Style> _styleFuture;
+  var _hasCenteredOnUser = false;
 
   @override
   void initState() {
@@ -54,7 +59,12 @@ class _MapTilerMapState extends State<MapTilerMap> {
   @override
   void didUpdateWidget(MapTilerMap oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.pois != widget.pois) {
+    if (oldWidget.userLocation != widget.userLocation &&
+        widget.userLocation != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) => _goToUser());
+      return;
+    }
+    if (oldWidget.pois != widget.pois && widget.userLocation == null) {
       WidgetsBinding.instance.addPostFrameCallback((_) => _fitToPois());
     }
   }
@@ -86,6 +96,28 @@ class _MapTilerMapState extends State<MapTilerMap> {
   }
 
   List<MapPoi> get _pois => widget.pois;
+
+  void _onMapReady() {
+    if (widget.userLocation != null) {
+      _goToUser();
+      return;
+    }
+    _fitToPois();
+  }
+
+  void _goToUser() {
+    final location = widget.userLocation;
+    if (!mounted || location == null) return;
+    try {
+      final zoom = _hasCenteredOnUser
+          ? _mapController.camera.zoom
+          : _streetZoom;
+      _mapController.move(location, zoom);
+      _hasCenteredOnUser = true;
+    } catch (_) {
+      // MapController może nie być jeszcze podpięty do FlutterMap.
+    }
+  }
 
   void _fitToPois() {
     if (!mounted || _pois.isEmpty) return;
@@ -145,7 +177,7 @@ class _MapTilerMapState extends State<MapTilerMap> {
         minZoom: 2,
         maxZoom: 20,
         backgroundColor: const Color(0xFFE8E6D6),
-        onMapReady: _fitToPois,
+        onMapReady: _onMapReady,
       ),
       children: [
         TileLayer(
@@ -153,6 +185,19 @@ class _MapTilerMapState extends State<MapTilerMap> {
           userAgentPackageName: 'mobile',
           maxNativeZoom: 22,
         ),
+        if (widget.userLocation != null)
+          CircleLayer(
+            circles: [
+              CircleMarker(
+                point: widget.userLocation!,
+                radius: 22,
+                useRadiusInMeter: true,
+                color: const Color(0xFF1E88E5).withValues(alpha: 0.18),
+                borderColor: const Color(0xFF1E88E5).withValues(alpha: 0.35),
+                borderStrokeWidth: 1,
+              ),
+            ],
+          ),
         MarkerLayer(
           alignment: Alignment.topCenter,
           markers: [
@@ -178,6 +223,17 @@ class _MapTilerMapState extends State<MapTilerMap> {
               ),
           ],
         ),
+        if (widget.userLocation != null)
+          MarkerLayer(
+            markers: [
+              Marker(
+                point: widget.userLocation!,
+                width: _userDotSize,
+                height: _userDotSize,
+                child: const _UserLocationDot(),
+              ),
+            ],
+          ),
         const RichAttributionWidget(
           alignment: AttributionAlignment.bottomRight,
           attributions: [
@@ -222,6 +278,28 @@ class _MapTilerMapState extends State<MapTilerMap> {
           ),
         );
       },
+    );
+  }
+}
+
+class _UserLocationDot extends StatelessWidget {
+  const _UserLocationDot();
+
+  @override
+  Widget build(BuildContext context) {
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: const Color(0xFF1E88E5),
+        border: Border.all(color: Colors.white, width: 3),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFF1E88E5).withValues(alpha: 0.4),
+            blurRadius: 6,
+            spreadRadius: 1,
+          ),
+        ],
+      ),
     );
   }
 }

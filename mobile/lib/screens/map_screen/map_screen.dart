@@ -5,6 +5,7 @@ import '../../models/location_model.dart';
 import '../../services/location_service.dart';
 import '../../widgets/app_widgets.dart';
 import '../../widgets/maptiler_map.dart';
+import 'map_walk_controls.dart';
 
 class MapScreen extends StatefulWidget {
   const MapScreen({super.key});
@@ -14,13 +15,18 @@ class MapScreen extends StatefulWidget {
 }
 
 class _MapScreenState extends State<MapScreen> {
+  static const _fallbackLocation = LatLng(51.1097, 17.0325);
+
   final LocationService _locationService = LocationService();
   List<MapPoi> _pois = const [];
+  LatLng _userLocation = _fallbackLocation;
+  var _hasWalked = false;
 
   @override
   void initState() {
     super.initState();
     _loadLocations();
+    _loadUserLocation();
   }
 
   Future<void> _loadLocations() async {
@@ -38,6 +44,25 @@ class _MapScreenState extends State<MapScreen> {
         _pois = const [];
       });
     }
+  }
+
+  Future<void> _loadUserLocation() async {
+    try {
+      final position = await _locationService.getMyPosition();
+      if (!mounted || position == null || _hasWalked) return;
+      setState(() {
+        _userLocation = LatLng(position.latitude, position.longitude);
+      });
+    } catch (_) {
+      // Zostaje pozycja startowa — chód testowy i tak działa.
+    }
+  }
+
+  void _walk(WalkDirection direction) {
+    setState(() {
+      _hasWalked = true;
+      _userLocation = SimulatedWalk.step(_userLocation, direction);
+    });
   }
 
   List<MapPoi> _toPois(List<LocationModel> locations) {
@@ -59,7 +84,21 @@ class _MapScreenState extends State<MapScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: const AppHeader(title: 'Mapa'),
-      body: MapTilerMap(pois: _pois),
+      body: Stack(
+        children: [
+          MapTilerMap(
+            pois: _pois,
+            userLocation: _userLocation,
+            initialCenter: _userLocation,
+            initialZoom: 16.5,
+          ),
+          Positioned(
+            left: 16,
+            bottom: 24,
+            child: MapWalkPad(onStep: _walk),
+          ),
+        ],
+      ),
     );
   }
 }

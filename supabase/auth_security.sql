@@ -1,14 +1,6 @@
 -- Run in Supabase SQL Editor. The client must never receive service_role_key.
 create extension if not exists pgcrypto;
 
-create table if not exists public.profiles (
-  id uuid primary key references auth.users(id) on delete cascade,
-  username text not null check (username ~ '^[A-Za-z0-9_.-]{3,30}$'),
-  email text not null,
-  created_at timestamptz not null default now(),
-  updated_at timestamptz not null default now()
-);
-
 create table if not exists public.auth_attempt_logs (
   id bigint generated always as identity primary key,
   email_hash text not null,
@@ -34,11 +26,12 @@ create or replace function public.handle_new_user()
 returns trigger language plpgsql security definer set search_path = public
 as $$
 begin
-  insert into public.profiles (id, username, email)
+  insert into public.profiles (id, display_name, created_at, updated_at)
   values (
     new.id,
-    coalesce(nullif(new.raw_user_meta_data->>'username', ''), 'user_' || substr(new.id::text, 1, 8)),
-    new.email
+    coalesce(nullif(new.raw_user_meta_data->>'display_name', ''), 'user_' || substr(new.id::text, 1, 8)),
+    now(),
+    now()
   ) on conflict (id) do nothing;
   return new;
 end;

@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'auth_service.dart';
 import 'main_screen.dart';
 
-const _quickLoginEmail = String.fromEnvironment('QUICK_LOGIN_EMAIL');
-const _quickLoginPassword = String.fromEnvironment('QUICK_LOGIN_PASSWORD');
+const _quickLoginEmail = 'testowy@gmail.com';
+const _quickLoginPassword = 'oiLgEzz#h3MtYcoT';
 
 class AuthScreen extends StatefulWidget {
   const AuthScreen({super.key});

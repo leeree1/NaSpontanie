@@ -1,38 +1,91 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'security_service.dart';
 
 class AuthService {
   final SupabaseClient _client = Supabase.instance.client;
+  static final List<DateTime> _failedAttempts = [];
 
-  Future<void> signUp(String email, String password, String username) async {
+  static final RegExp _emailPattern = RegExp(r'^[^\s@]+@[^\s@]+\.[^\s@]+$');
+
+  static String? validateEmail(String value) {
+    final email = SecurityService.sanitizeInput(value).toLowerCase();
+    return _emailPattern.hasMatch(email) ? null : 'Podaj poprawny email';
+  }
+
+  static String? validatePassword(String value) {
+    return SecurityService.isStrongPassword(value)
+        ? null
+        : 'Hasło: min. 8 znaków, wielka i mała litera, cyfra oraz znak specjalny';
+  }
+
+  static String? validateUsername(String value) {
+    final username = SecurityService.sanitizeInput(value);
+    return RegExp(r'^[a-zA-Z0-9_.-]{3,30}$').hasMatch(username)
+        ? null
+        : 'Nazwa: 3-30 znaków (litery, cyfry, _, . lub -)';
+  }
+
+  bool _rateLimitExceeded() {
+    final cutoff = DateTime.now().subtract(const Duration(minutes: 1));
+    _failedAttempts.removeWhere((attempt) => attempt.isBefore(cutoff));
+    return _failedAttempts.length >= 5;
+  }
+
+  Future<void> _recordFailedAttempt(String email) async {
+    _failedAttempts.add(DateTime.now());
+    try {
+      await _client.rpc('log_auth_failure', params: {'attempt_email': email});
+    } catch (_) {
+      // Logging must never reveal whether an account exists.
+    }
+  }
+
+  Future<AuthResponse> signUp(
+    String email,
+    String password,
+    String username,
+  ) async {
+    final cleanEmail = SecurityService.sanitizeInput(email).toLowerCase();
+    final cleanUsername = SecurityService.sanitizeInput(username);
+    if (validateEmail(cleanEmail) != null ||
+        validatePassword(password) != null ||
+        validateUsername(cleanUsername) != null) {
+      throw const AuthException('Dane rejestracji są nieprawidłowe.');
+    }
+
     final response = await _client.auth.signUp(
-      email: email,
+      email: cleanEmail,
       password: password,
-      data: {
-        'username': username,
-        'created_at': DateTime.now().toIso8601String(),
-      },
+      data: {'username': cleanUsername},
     );
 
     if (response.user == null) {
-      throw Exception('Rejestracja nieudana');
+      throw const AuthException('Rejestracja nieudana.');
     }
-
-    await _client.from('profiles').insert({
-      'id': response.user!.id,
-      'username': username,
-      'email': email,
-      'created_at': DateTime.now().toIso8601String(),
-    });
+    return response;
   }
 
   Future<void> signIn(String email, String password) async {
-    final response = await _client.auth.signIn(
-      email: email,
-      password: password,
-    );
+    final cleanEmail = SecurityService.sanitizeInput(email).toLowerCase();
+    if (validateEmail(cleanEmail) != null || password.isEmpty) {
+      throw const AuthException('Nieprawidłowy email lub hasło.');
+    }
+    if (_rateLimitExceeded()) {
+      throw const AuthException('Zbyt wiele prób. Spróbuj ponownie za minutę.');
+    }
 
-    if (response.user == null) {
-      throw Exception('Logowanie nieudane');
+    try {
+      final response = await _client.auth.signInWithPassword(
+        email: cleanEmail,
+        password: password,
+      );
+
+      if (response.user == null) {
+        throw const AuthException('Nieprawidłowy email lub hasło.');
+      }
+    } on AuthException {
+      await _recordFailedAttempt(cleanEmail);
+      rethrow;
     }
   }
 
@@ -51,6 +104,10 @@ class AuthService {
 
   // resetowanie hasla
   Future<void> resetPassword(String email) async {
-    await _client.auth.resetPasswordForEmail(email);
+    final cleanEmail = SecurityService.sanitizeInput(email).toLowerCase();
+    if (validateEmail(cleanEmail) != null) {
+      throw const AuthException('Podaj poprawny email.');
+    }
+    await _client.auth.resetPasswordForEmail(cleanEmail);
   }
 }

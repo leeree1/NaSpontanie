@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
-import '../services/auth_service.dart';
+import 'auth_service.dart';
 import 'main_screen.dart';
 
 class AuthScreen extends StatefulWidget {
@@ -30,15 +29,23 @@ class _AuthScreenState extends State<AuthScreen> {
     try {
       if (_isLogin) {
         await _authService.signIn(
-          _emailController.text.trim(),
-          _passwordController.text.trim(),
+          _emailController.text,
+          _passwordController.text,
         );
       } else {
-        await _authService.signUp(
+        final response = await _authService.signUp(
           _emailController.text.trim(),
-          _passwordController.text.trim(),
+          _passwordController.text,
           _usernameController.text.trim(),
         );
+        if (response.session == null && mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Sprawdź email i potwierdz konto przed logowaniem'),
+            ),
+          );
+          return;
+        }
       }
 
       if (mounted) {
@@ -48,6 +55,7 @@ class _AuthScreenState extends State<AuthScreen> {
         );
       }
     } catch (e) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Błąd: ${e.toString()}'),
@@ -56,6 +64,33 @@ class _AuthScreenState extends State<AuthScreen> {
       );
     } finally {
       if (mounted) setState(() => _isLoading = false);
+    }
+  }
+
+  Future<void> _resetPassword() async {
+    final email = _emailController.text;
+    final error = AuthService.validateEmail(email);
+    if (error != null) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(error)));
+      return;
+    }
+    try {
+      await _authService.resetPassword(email);
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Jeśli konto istnieje, wysłaliśmy link resetujący'),
+        ),
+      );
+    } catch (_) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Nie udało się wysłać linku resetującego.'),
+        ),
+      );
     }
   }
 
@@ -91,8 +126,7 @@ class _AuthScreenState extends State<AuthScreen> {
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                  validator: (v) =>
-                      v!.contains('@') ? null : 'Podaj poprawny email',
+                  validator: (v) => AuthService.validateEmail(v ?? ''),
                 ),
                 SizedBox(height: 16),
 
@@ -108,8 +142,7 @@ class _AuthScreenState extends State<AuthScreen> {
                             borderRadius: BorderRadius.circular(12),
                           ),
                         ),
-                        validator: (v) =>
-                            v!.length >= 3 ? null : 'Min. 3 znaki',
+                        validator: (v) => AuthService.validateUsername(v ?? ''),
                       ),
                       SizedBox(height: 16),
                     ],
@@ -134,10 +167,18 @@ class _AuthScreenState extends State<AuthScreen> {
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                  validator: (v) =>
-                      v!.length >= 6 ? null : 'Hasło min. 6 znaków',
+                  validator: (v) => AuthService.validatePassword(v ?? ''),
                 ),
                 SizedBox(height: 24),
+
+                if (_isLogin)
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: TextButton(
+                      onPressed: _isLoading ? null : _resetPassword,
+                      child: const Text('Nie pamiętasz hasła?'),
+                    ),
+                  ),
 
                 // Przycisk
                 SizedBox(

@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'auth_screen.dart';
 import 'home_screen.dart';
 import 'map_screen.dart';
 import 'passport_screen.dart';
@@ -25,11 +27,11 @@ class _MainScreenState extends State<MainScreen> {
 
   @override
   Widget build(BuildContext context) {
+    if (Supabase.instance.client.auth.currentSession == null) {
+      return const AuthScreen();
+    }
     return Scaffold(
-      body: IndexedStack(
-        index: _currentIndex,
-        children: _screens,
-      ),
+      body: IndexedStack(index: _currentIndex, children: _screens),
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
         currentIndex: _currentIndex,
@@ -39,26 +41,11 @@ class _MainScreenState extends State<MainScreen> {
           });
         },
         items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Start',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.map),
-            label: 'Mapa',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.badge),
-            label: 'Paszport',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.explore),
-            label: 'Wyprawy',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Profil',
-          ),
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Start'),
+          BottomNavigationBarItem(icon: Icon(Icons.map), label: 'Mapa'),
+          BottomNavigationBarItem(icon: Icon(Icons.badge), label: 'Paszport'),
+          BottomNavigationBarItem(icon: Icon(Icons.explore), label: 'Wyprawy'),
+          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profil'),
         ],
       ),
     );

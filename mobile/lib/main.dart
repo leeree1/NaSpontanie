@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'screens/auth_screen/auth_screen.dart';
 import 'screens/main_screen.dart';
@@ -8,6 +9,7 @@ import 'theme/app_theme.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await _loadEnv();
 
   await Supabase.initialize(
     url: 'https://osdyyrltmasukfnilhzy.supabase.co',
@@ -15,6 +17,14 @@ Future<void> main() async {
   );
 
   runApp(const NaSpontanieApp());
+}
+
+Future<void> _loadEnv() async {
+  try {
+    await dotenv.load(fileName: '.env', isOptional: true);
+  } catch (_) {
+    // MAPTILER_API_KEY może też pochodzić z --dart-define.
+  }
 }
 
 class NaSpontanieApp extends StatelessWidget {

@@ -21,9 +21,9 @@ Future<void> main() async {
 
 Future<void> _loadEnv() async {
   try {
-    await dotenv.load(fileName: '.env', isOptional: true);
+    await dotenv.load(fileName: '.env.example', isOptional: true);
   } catch (_) {
-    // MAPTILER_API_KEY może też pochodzić z --dart-define.
+    // Klucz mapy ma fallback w MapTilerConfig.
   }
 }
 

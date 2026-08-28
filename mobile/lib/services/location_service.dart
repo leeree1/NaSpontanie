@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../models/location_model.dart';
@@ -26,7 +27,7 @@ class LocationService {
           .map((json) => LocationModel.fromJson(json))
           .toList();
     } catch (e) {
-      print('Błąd podczas pobierania lokacji (Model): $e');
+      debugPrint('Błąd podczas pobierania lokacji (Model): $e');
       return [];
     }
   }
@@ -51,7 +52,7 @@ class LocationService {
         return Geolocator.getLastKnownPosition();
       }
     } catch (e) {
-      print('Błąd GPS: $e');
+      debugPrint('Błąd GPS: $e');
       try {
         return await Geolocator.getLastKnownPosition();
       } catch (_) {

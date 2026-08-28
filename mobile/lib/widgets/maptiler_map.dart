@@ -277,13 +277,11 @@ class _MapStatus extends StatelessWidget {
     required this.message,
     required this.child,
     this.details,
-    this.onRetry,
   });
 
   final Widget child;
   final String message;
   final String? details;
-  final VoidCallback? onRetry;
 
   @override
   Widget build(BuildContext context) {
@@ -313,16 +311,6 @@ class _MapStatus extends StatelessWidget {
                   style: const TextStyle(
                     color: AppColors.textSecondary,
                     fontSize: 13,
-                  ),
-                ),
-              ],
-              if (onRetry != null) ...[
-                const SizedBox(height: 16),
-                SizedBox(
-                  width: 160,
-                  child: ElevatedButton(
-                    onPressed: onRetry,
-                    child: const Text('Spróbuj ponownie'),
                   ),
                 ),
               ],

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_cancellable_tile_provider/flutter_map_cancellable_tile_provider.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:vector_map_tiles/vector_map_tiles.dart';
 
 import '../config/maptiler_config.dart';
 import '../theme/app_theme.dart';
@@ -48,14 +47,7 @@ class _MapTilerMapState extends State<MapTilerMap> {
   static const _streetZoom = 16.5;
 
   final MapController _mapController = MapController();
-  late Future<Style> _styleFuture;
   var _hasCenteredOnUser = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _styleFuture = _loadStyle();
-  }
 
   @override
   void didUpdateWidget(MapTilerMap oldWidget) {
@@ -74,26 +66,6 @@ class _MapTilerMapState extends State<MapTilerMap> {
   void dispose() {
     _mapController.dispose();
     super.dispose();
-  }
-
-  Future<Style> _loadStyle() {
-    final apiKey = MapTilerConfig.apiKey;
-    if (apiKey.isEmpty) {
-      return Future.error(
-        StateError(
-          'Brak klucza MAPTILER_API_KEY. Uzupełnij plik .env albo przekaż '
-          '--dart-define=MAPTILER_API_KEY=...',
-        ),
-      );
-    }
-
-    return StyleReader(uri: MapTilerConfig.styleUri, apiKey: apiKey).read();
-  }
-
-  void _retry() {
-    setState(() {
-      _styleFuture = _loadStyle();
-    });
   }
 
   List<MapPoi> get _pois => widget.pois;
@@ -141,32 +113,19 @@ class _MapTilerMapState extends State<MapTilerMap> {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<Style>(
-      future: _styleFuture,
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const _MapStatus(
-            message: 'Ładowanie mapy…',
-            child: CircularProgressIndicator(),
-          );
-        }
+    if (MapTilerConfig.apiKey.isEmpty) {
+      return const _MapStatus(
+        message: 'Nie udało się załadować mapy.',
+        details: 'Brak klucza MapTiler.',
+        child: Icon(
+          Icons.map_outlined,
+          size: 48,
+          color: AppColors.error,
+        ),
+      );
+    }
 
-        if (snapshot.hasError || !snapshot.hasData) {
-          return _MapStatus(
-            message: 'Nie udało się załadować mapy.',
-            details: snapshot.error?.toString(),
-            onRetry: _retry,
-            child: Icon(
-              Icons.map_outlined,
-              size: 48,
-              color: AppColors.error.withValues(alpha: 0.8),
-            ),
-          );
-        }
-
-        return _buildMap();
-      },
-    );
+    return _buildMap();
   }
 
   Widget _buildMap() {

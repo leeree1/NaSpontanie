@@ -39,7 +39,6 @@ dependencies:
   google_fonts: ^6.3.2
   latlong2: ^0.9.1
   supabase_flutter: ^2.17.2
-  vector_map_tiles: ^8.0.0
 
 dev_dependencies:
   flutter_test:
@@ -63,7 +62,7 @@ flutter:
   uses-material-design: true
 
   assets:
-    - .env
+    - .env.example
     - assets/images/
     - assets/icons/
 

@@ -15,29 +15,27 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen> {
   int _currentIndex = 0;
-  late final List<Widget> _screens;
-
-  @override
-  void initState() {
-    super.initState();
-    _screens = [
-      HomeScreen(onOpenPlanner: () => setState(() => _currentIndex = 3)),
-      const MapScreen(),
-      const PassportScreen(),
-      const TripsScreen(),
-      const ProfileScreen(),
-    ];
-  }
+  var _mapOpened = false;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: IndexedStack(index: _currentIndex, children: _screens),
+      body: IndexedStack(
+        index: _currentIndex,
+        children: [
+          HomeScreen(onOpenPlanner: () => setState(() => _currentIndex = 3)),
+          _mapOpened ? const MapScreen() : const SizedBox.shrink(),
+          const PassportScreen(),
+          const TripsScreen(),
+          const ProfileScreen(),
+        ],
+      ),
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
         currentIndex: _currentIndex,
         onTap: (index) {
           setState(() {
+            if (index == 1) _mapOpened = true;
             _currentIndex = index;
           });
         },

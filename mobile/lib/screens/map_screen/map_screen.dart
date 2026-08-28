@@ -67,7 +67,12 @@ class _MapScreenState extends State<MapScreen> {
 
   List<MapPoi> _toPois(List<LocationModel> locations) {
     return locations
-        .where((location) => location.latitude != 0 || location.longitude != 0)
+        .where((location) {
+          final lat = location.latitude;
+          final lng = location.longitude;
+          if (lat == 0 && lng == 0) return false;
+          return lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180;
+        })
         .map(
           (location) => MapPoi(
             id: 'location-${location.id}',

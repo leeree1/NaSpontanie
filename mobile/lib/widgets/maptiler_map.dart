@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_cancellable_tile_provider/flutter_map_cancellable_tile_provider.dart';
@@ -47,7 +48,10 @@ class _MapTilerMapState extends State<MapTilerMap> {
   static const _streetZoom = 16.5;
 
   final MapController _mapController = MapController();
+  final TileProvider? _tileProvider =
+      kIsWeb ? CancellableNetworkTileProvider() : null;
   var _hasCenteredOnUser = false;
+  var _mapReady = false;
 
   @override
   void didUpdateWidget(MapTilerMap oldWidget) {
@@ -71,6 +75,7 @@ class _MapTilerMapState extends State<MapTilerMap> {
   List<MapPoi> get _pois => widget.pois;
 
   void _onMapReady() {
+    _mapReady = true;
     if (widget.userLocation != null) {
       _goToUser();
       return;
@@ -80,7 +85,7 @@ class _MapTilerMapState extends State<MapTilerMap> {
 
   void _goToUser() {
     final location = widget.userLocation;
-    if (!mounted || location == null) return;
+    if (!mounted || !_mapReady || location == null) return;
     try {
       final zoom = _hasCenteredOnUser
           ? _mapController.camera.zoom
@@ -93,7 +98,7 @@ class _MapTilerMapState extends State<MapTilerMap> {
   }
 
   void _fitToPois() {
-    if (!mounted || _pois.isEmpty) return;
+    if (!mounted || !_mapReady || _pois.isEmpty) return;
     try {
       if (_pois.length == 1) {
         _mapController.move(_pois.first.point, widget.initialZoom);
@@ -135,16 +140,18 @@ class _MapTilerMapState extends State<MapTilerMap> {
         initialCenter: widget.initialCenter,
         initialZoom: widget.initialZoom,
         minZoom: 2,
-        maxZoom: 20,
+        maxZoom: 18,
         backgroundColor: const Color(0xFFE8E6D6),
         onMapReady: _onMapReady,
       ),
       children: [
         TileLayer(
           urlTemplate: MapTilerConfig.rasterTilesUrlTemplate,
-          userAgentPackageName: 'mobile',
-          maxNativeZoom: 22,
-          tileProvider: CancellableNetworkTileProvider(),
+          userAgentPackageName: 'com.example.mobile',
+          maxNativeZoom: 18,
+          keepBuffer: 1,
+          panBuffer: 0,
+          tileProvider: _tileProvider,
         ),
         if (widget.userLocation != null)
           CircleLayer(

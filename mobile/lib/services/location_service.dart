@@ -1,9 +1,16 @@
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'dart:async';
+
 import 'package:geolocator/geolocator.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../models/location_model.dart';
 
 class LocationService {
   final SupabaseClient _supabase = Supabase.instance.client;
+
+  static const _positionSettings = LocationSettings(
+    accuracy: LocationAccuracy.medium,
+    timeLimit: Duration(seconds: 8),
+  );
 
   Future<List<LocationModel>> getFilteredLocations({
     required String city,
@@ -25,22 +32,31 @@ class LocationService {
   }
 
   Future<Position?> getMyPosition() async {
-    bool serviceEnabled;
-    LocationPermission permission;
+    try {
+      final serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      if (!serviceEnabled) return null;
 
-    serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if (!serviceEnabled) return null;
+      var permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+        if (permission == LocationPermission.denied) return null;
+      }
+      if (permission == LocationPermission.deniedForever) return null;
 
-    permission = await Geolocator.checkPermission();
-    if (permission == LocationPermission.denied) {
-      permission = await Geolocator.requestPermission();
-      if (permission == LocationPermission.denied) return null;
+      try {
+        return await Geolocator.getCurrentPosition(
+          locationSettings: _positionSettings,
+        );
+      } on TimeoutException {
+        return Geolocator.getLastKnownPosition();
+      }
+    } catch (e) {
+      print('Błąd GPS: $e');
+      try {
+        return await Geolocator.getLastKnownPosition();
+      } catch (_) {
+        return null;
+      }
     }
-
-    if (permission == LocationPermission.deniedForever) return null;
-
-    return await Geolocator.getCurrentPosition(
-      desiredAccuracy: LocationAccuracy.high,
-    );
   }
 }

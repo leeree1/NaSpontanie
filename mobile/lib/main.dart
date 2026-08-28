@@ -2,29 +2,31 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+
+import 'providers/app_provider.dart';
 import 'screens/auth_screen/auth_screen.dart';
 import 'screens/main_screen.dart';
 import 'theme/app_theme.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await _loadEnv();
+  try {
+    await dotenv.load(fileName: '.env.example', isOptional: true);
+  } catch (_) {}
 
   await Supabase.initialize(
     url: 'https://osdyyrltmasukfnilhzy.supabase.co',
     publishableKey: 'sb_publishable_Q0-PukTY3_JXl5NqP26EFw_zlHrviEB',
   );
 
-  runApp(const NaSpontanieApp());
-}
-
-Future<void> _loadEnv() async {
-  try {
-    await dotenv.load(fileName: '.env.example', isOptional: true);
-  } catch (_) {
-    // Klucz mapy ma fallback w MapTilerConfig.
-  }
+  runApp(
+    ChangeNotifierProvider(
+      create: (_) => AppProvider(),
+      child: const NaSpontanieApp(),
+    ),
+  );
 }
 
 class NaSpontanieApp extends StatelessWidget {

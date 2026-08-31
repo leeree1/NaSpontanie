@@ -1,6 +1,9 @@
 import 'dart:async';
+import 'dart:convert';
+import 'dart:math';
 
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../models/location_model.dart';
@@ -13,6 +16,7 @@ class LocationService {
     timeLimit: Duration(seconds: 8),
   );
 
+  /// Pobiera przefiltrowane lokacje z bazy Supabase dla wybranego miasta
   Future<List<LocationModel>> getFilteredLocations({
     required String city,
   }) async {
@@ -32,6 +36,7 @@ class LocationService {
     }
   }
 
+  /// Pobiera bieżącą pozycję użytkownika za pomocą GPS z obsługą uprawnień
   Future<Position?> getMyPosition() async {
     try {
       final serviceEnabled = await Geolocator.isLocationServiceEnabled();
@@ -58,6 +63,32 @@ class LocationService {
       } catch (_) {
         return null;
       }
+    }
+  }
+
+  /// Proof of Concept (Zadanie #14): Losuje określoną liczbę lokacji z pliku assets/locations.json
+  Future<List<LocationModel>> getRandomTripLocations(int count) async {
+    try {
+      final String response = await rootBundle.loadString('assets/locations.json');
+      final List<dynamic> data = json.decode(response);
+
+      // Losowanie bezpośrednio na liście danych surowych przed mapowaniem
+      data.shuffle(Random());
+      final selectedData = data.take(count);
+
+      List<LocationModel> locations = selectedData.map((jsonItem) {
+        return LocationModel.fromJson({
+          'id': jsonItem['id'].toString(),
+          'name': jsonItem['name'],
+          'lat': jsonItem['lat'],
+          'lon': jsonItem['lon'],
+        });
+      }).toList();
+
+      return locations;
+    } catch (e) {
+      debugPrint('Błąd podczas losowania lokacji do planera (#14): $e');
+      return [];
     }
   }
 }

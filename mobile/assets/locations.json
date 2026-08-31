@@ -1,0 +1,32 @@
+[
+  {
+    "id": 1200477040,
+    "name": "Dziekanat Wydziału Lekarsko-Stomatologicznego",
+    "lat": 51.0950133,
+    "lon": 17.0585680
+  },
+  {
+    "id": 2467622437,
+    "name": "Instytut Historyczny UWr",
+    "lat": 51.1126329,
+    "lon": 17.0356181
+  },
+  {
+    "id": 3510044568,
+    "name": "Wydział Zarządzania PWr",
+    "lat": 51.1080743,
+    "lon": 17.0652629
+  },
+  {
+    "id": 3510121193,
+    "name": "Wydział Matematyki PWr",
+    "lat": 51.1079370,
+    "lon": 17.0574129
+  },
+  {
+    "id": 6157591255,
+    "name": "Uniwersytet Dolnośląski DSW",
+    "lat": 51.1127415,
+    "lon": 16.9885273
+  }
+]

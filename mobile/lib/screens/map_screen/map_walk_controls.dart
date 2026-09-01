@@ -37,24 +37,36 @@ class MapWalkPad extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: AppColors.surface.withValues(alpha: 0.94),
-      elevation: 4,
-      shadowColor: Colors.black26,
-      borderRadius: BorderRadius.circular(16),
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(8, 8, 8, 10),
+      color: AppColors.surface.withOpacity(0.95),
+      elevation: 6,
+      shadowColor: Colors.black38,
+      borderRadius: BorderRadius.circular(20),
+      child: Container(
+        padding: const EdgeInsets.all(10),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: Colors.white.withOpacity(0.4), width: 1.5),
+        ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Text(
-              'Chód',
-              style: TextStyle(
-                fontSize: 11,
-                fontWeight: FontWeight.w700,
-                color: AppColors.textSecondary,
-              ),
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: const [
+                Icon(Icons.directions_walk, color: AppColors.primary, size: 16),
+                SizedBox(width: 4),
+                Text(
+                  'Symulator Ruchu',
+                  style: TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.textSecondary,
+                    letterSpacing: 0.3,
+                  ),
+                ),
+              ],
             ),
-            const SizedBox(height: 4),
+            const SizedBox(height: 6),
             _WalkButton(
               icon: Icons.keyboard_arrow_up,
               onStep: () => onStep(WalkDirection.north),
@@ -66,13 +78,22 @@ class MapWalkPad extends StatelessWidget {
                   icon: Icons.keyboard_arrow_left,
                   onStep: () => onStep(WalkDirection.west),
                 ),
-                const SizedBox(
-                  width: 44,
-                  height: 44,
-                  child: Icon(
-                    Icons.directions_walk,
-                    color: AppColors.primary,
-                    size: 22,
+                Container(
+                  width: 46,
+                  height: 46,
+                  alignment: Alignment.center,
+                  child: Container(
+                    width: 28,
+                    height: 28,
+                    decoration: BoxDecoration(
+                      color: AppColors.primary.withOpacity(0.1),
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(
+                      Icons.navigation,
+                      color: AppColors.primary,
+                      size: 14,
+                    ),
                   ),
                 ),
                 _WalkButton(
@@ -103,7 +124,7 @@ class _WalkButton extends StatefulWidget {
 }
 
 class _WalkButtonState extends State<_WalkButton> {
-  static const _repeatEvery = Duration(milliseconds: 160);
+  static const _repeatEvery = Duration(milliseconds: 150);
   Timer? _repeatTimer;
 
   void _start() {
@@ -125,18 +146,19 @@ class _WalkButtonState extends State<_WalkButton> {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTapDown: (_) => _start(),
-      onTapUp: (_) => _stop(),
-      onTapCancel: _stop,
-      child: Container(
-        width: 44,
-        height: 44,
-        decoration: BoxDecoration(
-          color: AppColors.primaryLight,
-          borderRadius: BorderRadius.circular(10),
+    return Material(
+      color: AppColors.primaryLight,
+      borderRadius: BorderRadius.circular(12),
+      child: InkWell(
+        onTapDown: (_) => _start(),
+        onTapUp: (_) => _stop(),
+        onTapCancel: _stop,
+        borderRadius: BorderRadius.circular(12),
+        child: SizedBox(
+          width: 46,
+          height: 46,
+          child: Icon(widget.icon, color: AppColors.primaryDark, size: 28),
         ),
-        child: Icon(widget.icon, color: AppColors.primaryDark, size: 28),
       ),
     );
   }

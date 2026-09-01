@@ -22,6 +22,7 @@ Future<void> main() async {
   );
 
   runApp(
+    // AppProvider znajduje się na samym czubku drzewa widgetów (nad MaterialApp)
     ChangeNotifierProvider(
       create: (_) => AppProvider(),
       child: const NaSpontanieApp(),

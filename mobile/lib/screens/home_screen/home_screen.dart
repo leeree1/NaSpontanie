@@ -2,304 +2,278 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../providers/app_provider.dart';
-import '../../services/location_service.dart';
-import '../../models/location_model.dart';
+import '../../theme/app_theme.dart';
 
-class HomeScreen extends StatefulWidget {
-  final VoidCallback? onOpenPlanner;
+class HomeScreen extends StatelessWidget {
+  final Function(String categoryKey)? onSelectCategory;
   final VoidCallback? onOpenMap;
 
-  const HomeScreen({super.key, this.onOpenPlanner, this.onOpenMap});
-
-  @override
-  State<HomeScreen> createState() => _HomeScreenState();
-}
-
-class _HomeScreenState extends State<HomeScreen> {
-  final LocationService _locationService = LocationService();
-  List<LocationModel> _randomLocations = [];
-  bool _isLoading = false;
-
-  Future<void> _testRandomLocations() async {
-    setState(() => _isLoading = true);
-    try {
-      final locations = await _locationService.getRandomTripLocations(3);
-      setState(() => _randomLocations = locations);
-    } catch (e) {
-      debugPrint('Błąd losowania: $e');
-    } finally {
-      setState(() => _isLoading = false);
-    }
-  }
+  const HomeScreen({
+    super.key,
+    this.onSelectCategory,
+    this.onOpenMap,
+  });
 
   @override
   Widget build(BuildContext context) {
-    final appProvider = Provider.of<AppProvider>(context);
-    final unlockedCount = appProvider.unlockedLocationIds.length;
+    final app = Provider.of<AppProvider>(context);
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF8F9FA),
+      backgroundColor: AppColors.background,
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(20.0),
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              // Górny pasek z powitaniem i statusem XP
+              // Pasek powitania i seria dni
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Row(
                     children: [
                       Container(
-                        padding: const EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFF2E7D32).withOpacity(0.1),
+                        width: 44,
+                        height: 44,
+                        decoration: const BoxDecoration(
                           shape: BoxShape.circle,
+                          gradient: AppColors.primaryGradient,
                         ),
-                        child: const Icon(Icons.explore, color: Color(0xFF2E7D32), size: 22),
+                        child: const Icon(Icons.explore_rounded, color: Colors.white, size: 24),
                       ),
                       const SizedBox(width: 12),
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           const Text(
-                            'Witaj ponownie! 👋',
-                            style: TextStyle(fontSize: 12, color: Colors.grey, fontWeight: FontWeight.w600),
+                            'Wrocław Live Radar 📍',
+                            style: TextStyle(fontSize: 12, color: AppColors.textMuted, fontWeight: FontWeight.bold),
                           ),
                           Text(
-                            'NaSpontanie',
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black.withOpacity(0.85),
-                            ),
+                            app.rankTitle,
+                            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppColors.textDark),
                           ),
                         ],
                       ),
                     ],
                   ),
-                  // Badge z punktami XP
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                     decoration: BoxDecoration(
-                      color: Colors.amber.shade50,
+                      color: Colors.white,
                       borderRadius: BorderRadius.circular(20),
-                      border: Border.all(color: Colors.amber.shade300, width: 1.5),
+                      border: Border.all(color: AppColors.cardBorder),
+                      boxShadow: AppStyles.softShadow,
                     ),
                     child: Row(
                       children: [
-                        const Icon(Icons.bolt, color: Colors.amber, size: 18),
+                        const Icon(Icons.bolt, color: AppColors.xpGold, size: 18),
                         const SizedBox(width: 4),
                         Text(
-                          '${appProvider.userXp} XP',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: Colors.amber.shade900,
-                            fontSize: 13,
-                          ),
+                          '${app.userXp} XP',
+                          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: AppColors.textDark),
                         ),
                       ],
                     ),
                   ),
                 ],
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 20),
 
-              // Główna karta powitalna (Hero Banner)
+              // Hero Live Ticker: Co dzieje się teraz w mieście
               Container(
-                padding: const EdgeInsets.all(24.0),
+                padding: const EdgeInsets.all(22),
                 decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [Color(0xFF2E7D32), Color(0xFF43A047), Color(0xFF66BB6A)],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
+                  gradient: AppColors.primaryGradient,
                   borderRadius: BorderRadius.circular(24),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.green.withOpacity(0.25),
-                      blurRadius: 12,
-                      offset: const Offset(0, 6),
-                    ),
-                  ],
+                  boxShadow: AppStyles.cardShadow,
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Row(
+                    Row(
                       children: [
-                        Icon(Icons.location_city, color: Colors.white70, size: 18),
-                        SizedBox(width: 8),
-                        Text(
-                          'Wrocław na wyciągnięcie ręki',
-                          style: TextStyle(color: Colors.white70, fontSize: 13, fontWeight: FontWeight.w600),
+                        Container(
+                          width: 8,
+                          height: 8,
+                          decoration: const BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: AppColors.accent,
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        const Text(
+                          'WROCŁAW TERAZ NA ŻYWO',
+                          style: TextStyle(color: AppColors.accent, fontWeight: FontWeight.bold, fontSize: 11, letterSpacing: 1.1),
                         ),
                       ],
                     ),
-                    const SizedBox(height: 10),
+                    const SizedBox(height: 12),
                     const Text(
-                      'Odkrywaj ukryte zakątki i zbieraj pieczątki!',
+                      'Sprawdź, gdzie tętni życie, a gdzie zjesz w ciszy!',
                       style: TextStyle(
                         color: Colors.white,
-                        fontSize: 21,
+                        fontSize: 20,
                         fontWeight: FontWeight.bold,
-                        height: 1.2,
+                        height: 1.25,
                       ),
                     ),
-                    const SizedBox(height: 16),
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.2),
-                        borderRadius: BorderRadius.circular(10),
+                    const SizedBox(height: 18),
+                    ElevatedButton.icon(
+                      onPressed: onOpenMap,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.accent,
+                        foregroundColor: AppColors.primary,
+                        elevation: 0,
+                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                       ),
-                      child: Text(
-                        'Zdobyte miejsca: $unlockedCount',
-                        style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold),
-                      ),
+                      icon: const Icon(Icons.map_rounded, size: 18),
+                      label: const Text('Otwórz Pełną Mapę Ruchu', style: TextStyle(fontWeight: FontWeight.bold)),
                     ),
                   ],
                 ),
               ),
               const SizedBox(height: 28),
 
-              // Zamiast "Szybkich Akcji" – Sekcja Dziennego Wyzwania / Misji
+              // Sekcja 4 Trybów Odkrywania Live
+              const Row(
+                children: [
+                  Text(
+                    'Tryby Odkrywania Live',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.textDark),
+                  ),
+                  SizedBox(width: 6),
+                  Icon(Icons.sensors, size: 18, color: AppColors.primaryMid),
+                ],
+              ),
+              const SizedBox(height: 6),
               const Text(
-                'Misja Dnia 🎯',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black87),
+                'Wybierz filtr, aby zobaczyć gorące strefy lub cichy chillout:',
+                style: TextStyle(fontSize: 13, color: AppColors.textMuted),
+              ),
+              const SizedBox(height: 16),
+
+              // 4 Tryby przekierowujące na mapę
+              _buildLiveCategoryCard(
+                title: 'Ukryte Perełki ✨',
+                subtitle: 'Sekretne podwórka i kameralne zakątki z dala od tłumów.',
+                badgeText: 'Niski ruch',
+                badgeColor: const Color(0xFF10B981),
+                icon: Icons.auto_awesome_rounded,
+                iconColor: const Color(0xFF6366F1),
+                onTap: () => onSelectCategory?.call('gems'),
               ),
               const SizedBox(height: 12),
 
-              Container(
-                padding: const EdgeInsets.all(18),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: Colors.grey.shade200),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.03),
-                      blurRadius: 8,
-                      offset: const Offset(0, 3),
-                    ),
-                  ],
-                ),
-                child: Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(14),
-                      decoration: BoxDecoration(
-                        color: Colors.orange.shade50,
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      child: const Icon(Icons.local_fire_department, color: Colors.orange, size: 28),
-                    ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            'Odwiedź dowolny punkt na mapie',
-                            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: Colors.black87),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            'Zdobądź dodatkowe +150 XP do swojego konta.',
-                            style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
+              _buildLiveCategoryCard(
+                title: 'Kawa i Chill ☕',
+                subtitle: 'Miejsca, gdzie zjesz w spokoju, popracujesz lub odpoczniesz.',
+                badgeText: 'Strefa relaksu',
+                badgeColor: const Color(0xFF0284C7),
+                icon: Icons.coffee_rounded,
+                iconColor: const Color(0xFFEC4899),
+                onTap: () => onSelectCategory?.call('chill'),
+              ),
+              const SizedBox(height: 12),
+
+              _buildLiveCategoryCard(
+                title: 'Zabytki i Mosty 🏛️',
+                subtitle: 'Ikony miasta, Ostrów Tumski, legendy i punkty widokowe.',
+                badgeText: 'Kultura & Widoki',
+                badgeColor: const Color(0xFF8B5CF6),
+                icon: Icons.account_balance_rounded,
+                iconColor: const Color(0xFF0F766E),
+                onTap: () => onSelectCategory?.call('sights'),
+              ),
+              const SizedBox(height: 12),
+
+              _buildLiveCategoryCard(
+                title: 'Wrocław Nocą 🔥',
+                subtitle: 'Największe skupiska ludzi, tętniące puby, neony i wydarzenia.',
+                badgeText: 'GORĄCY RUCH 🔥',
+                badgeColor: AppColors.fireOrange,
+                icon: Icons.nightlife_rounded,
+                iconColor: const Color(0xFFF59E0B),
+                onTap: () => onSelectCategory?.call('night'),
               ),
               const SizedBox(height: 24),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 
-              // Przycisk testowania losowania trasy (PoC #14) zachowany w eleganckiej formie
-              OutlinedButton.icon(
-                onPressed: _isLoading ? null : _testRandomLocations,
-                style: OutlinedButton.styleFrom(
-                  foregroundColor: const Color(0xFF2E7D32),
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  side: const BorderSide(color: Color(0xFF2E7D32), width: 1.5),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
-                  ),
+  Widget _buildLiveCategoryCard({
+    required String title,
+    required String subtitle,
+    required String badgeText,
+    required Color badgeColor,
+    required IconData icon,
+    required Color iconColor,
+    required VoidCallback onTap,
+  }) {
+    return Material(
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(20),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(20),
+        child: Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: AppColors.cardBorder),
+            boxShadow: AppStyles.softShadow,
+          ),
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(14),
+                decoration: BoxDecoration(
+                  color: iconColor.withOpacity(0.12),
+                  borderRadius: BorderRadius.circular(16),
                 ),
-                icon: _isLoading
-                    ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2))
-                    : const Icon(Icons.shuffle),
-                label: Text(
-                  _isLoading ? 'Losowanie trasy...' : 'Wylosuj spontaniczną trasę (#14)',
-                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
-                ),
+                child: Icon(icon, color: iconColor, size: 28),
               ),
-              const SizedBox(height: 20),
-
-              // Sekcja wylosowanych punktów
-              if (_randomLocations.isNotEmpty) ...[
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      'Propozycja na dziś:',
-                      style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.grey),
+                    Row(
+                      children: [
+                        Text(
+                          title,
+                          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: AppColors.textDark),
+                        ),
+                      ],
                     ),
+                    const SizedBox(height: 4),
                     Text(
-                      '${_randomLocations.length} punkty',
-                      style: const TextStyle(fontSize: 12, color: Color(0xFF2E7D32), fontWeight: FontWeight.w600),
+                      subtitle,
+                      style: const TextStyle(fontSize: 12, color: AppColors.textMuted, height: 1.25),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 8),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                      decoration: BoxDecoration(
+                        color: badgeColor.withOpacity(0.12),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Text(
+                        badgeText,
+                        style: TextStyle(color: badgeColor, fontSize: 10, fontWeight: FontWeight.bold),
+                      ),
                     ),
                   ],
                 ),
-                const SizedBox(height: 12),
-                ..._randomLocations.map((loc) => Container(
-                      margin: const EdgeInsets.only(bottom: 10),
-                      padding: const EdgeInsets.all(14),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(16),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.03),
-                            blurRadius: 6,
-                            offset: const Offset(0, 2),
-                          ),
-                        ],
-                        border: Border.all(color: Colors.grey.shade100),
-                      ),
-                      child: Row(
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.all(10),
-                            decoration: BoxDecoration(
-                              color: Colors.green.shade50,
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: const Icon(Icons.place, color: Color(0xFF2E7D32)),
-                          ),
-                          const SizedBox(width: 14),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  loc.title,
-                                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
-                                ),
-                                const SizedBox(height: 2),
-                                Text(
-                                  'Premia: +${loc.xp} XP',
-                                  style: const TextStyle(color: Colors.amber, fontWeight: FontWeight.w600, fontSize: 12),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    )),
-              ],
+              ),
+              const SizedBox(width: 8),
+              const Icon(Icons.arrow_forward_ios_rounded, size: 14, color: AppColors.cardBorder),
             ],
           ),
         ),
